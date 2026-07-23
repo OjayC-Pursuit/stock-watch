@@ -2,7 +2,7 @@
 
 ## Current Project State
 
-StockWatch has an approved functional design for its first feature. The repository still contains only planning documents, eight sample dairy products, and a basic HTML/CSS/JavaScript dashboard shell; no MVP feature logic has been implemented yet.
+StockWatch has approved functional and visual specifications for its first feature. The repository still contains only planning documents, eight sample dairy products, and a basic HTML/CSS/JavaScript dashboard shell; no MVP feature logic has been implemented yet.
 
 ## What Already Works
 
@@ -14,13 +14,13 @@ StockWatch has an approved functional design for its first feature. The reposito
 
 ## Most Recent Completed Work
 
-The inventory-prioritization functional design was approved and recorded in `docs/superpowers/specs/2026-07-23-inventory-prioritization-design.md`. No implementation changes were made.
+The approved visual direction was recorded in `docs/visual-design-specification.md`. No implementation changes were made.
 
 ## Next Exact Task
 
-Use the Frontend Design skill to define the approved feature’s visual direction: hierarchy, responsive layout, status treatments, typography, spacing, and card styling. Add that approved direction to the design specification, then obtain approval before creating an implementation plan.
+Create the implementation plan for the first dashboard feature.
 
-Do not begin implementation planning or feature work until the visual direction and updated specification are approved.
+Implementation planning must use both approved inputs: `docs/superpowers/specs/2026-07-23-inventory-prioritization-design.md` and `docs/visual-design-specification.md`. Do not begin feature work until the implementation plan is approved.
 
 ## Settled Decisions
 
@@ -33,13 +33,13 @@ Do not begin implementation planning or feature work until the visual direction 
 - Products have one primary status in this order: Urgent, Low Stock, Expiring Soon, Safe; cards retain all applicable reasons.
 - Urgent covers expired products, stockout within 2 days, and low stock expiring within 3 days. Low Stock is quantity at or below the reorder threshold. Expiring Soon is within 7 days.
 - Expected totals for the current sample data are Urgent 4, Low Stock 1, Expiring Soon 2, and Safe 1.
+- The visual direction is a Modern Food Operations Workspace: a warm, professional daily briefing with an inventory-health summary, prioritized work-task cards, accessible status treatments, and priority-first responsive behavior.
 - Automatic orders, supplier contact, report generation, accounts, multiple warehouses, live integrations, and advanced forecasting are out of scope.
 
 ## Unresolved Decisions or Blockers
 
-- The visual direction has not been defined or added to the functional specification.
 - How reviewed status will persist between page loads has not been decided.
-- There is no blocker for visual design.
+- There is no blocker for implementation planning.
 
 ## Verification Commands
 
