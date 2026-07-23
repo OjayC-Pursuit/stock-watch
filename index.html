@@ -9,30 +9,37 @@
   </head>
   <body>
     <header class="site-header">
-      <p class="eyebrow">Inventory attention dashboard</p>
-      <h1>StockWatch</h1>
-      <p>See which products need your attention today.</p>
+      <div class="brand-lockup" aria-label="StockWatch">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span>StockWatch</span>
+      </div>
+
+      <div class="briefing-layout">
+        <div>
+          <p class="eyebrow">Daily inventory briefing</p>
+          <h1>Good morning, Alicia.</h1>
+          <p class="briefing">
+            Here is what needs your attention today.
+          </p>
+        </div>
+        <p class="demo-date">
+          <span>Demo inventory date</span>
+          <time datetime="2026-07-22">July 22, 2026</time>
+        </p>
+      </div>
     </header>
 
-    <main class="dashboard" id="app">
-      <section class="summary" aria-labelledby="summary-heading">
-        <h2 id="summary-heading">Today’s Inventory Summary</h2>
-        <div class="summary-grid" aria-label="Inventory alert summary">
-          <article class="summary-card"><span>Low stock</span><strong>—</strong></article>
-          <article class="summary-card"><span>Expiring soon</span><strong>—</strong></article>
-          <article class="summary-card"><span>Urgent</span><strong>—</strong></article>
-        </div>
-      </section>
+    <main
+      class="dashboard"
+      id="app"
+      aria-busy="true"
+      aria-live="polite"
+    ></main>
 
-      <section class="products" aria-labelledby="products-heading">
-        <div class="section-heading">
-          <h2 id="products-heading">Products</h2>
-          <p>Product details and recommended actions will appear here.</p>
-        </div>
-        <div class="product-list" id="product-list"></div>
-      </section>
-    </main>
-
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>
