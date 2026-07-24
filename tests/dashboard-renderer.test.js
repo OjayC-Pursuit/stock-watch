@@ -25,7 +25,19 @@ test('uses singular day wording for one day until expiration', () => {
   );
 });
 
-test('nests status and product headings beneath the queue heading', () => {
+test('does not make the entire dashboard a live region', () => {
+  const page = readFileSync(
+    new URL('../index.html', import.meta.url),
+    'utf8',
+  );
+
+  assert.doesNotMatch(
+    page,
+    /<main[\s\S]*?id="app"[\s\S]*?aria-live=/,
+  );
+});
+
+test('renders the selected red-line board and prominent FreshRoute identity', () => {
   const evaluatedProducts = sortEvaluatedProducts(
     products.map(evaluateProduct),
   );
@@ -37,6 +49,30 @@ test('nests status and product headings beneath the queue heading', () => {
     getStatusCounts(evaluatedProducts),
   );
 
-  assert.match(container.innerHTML, /<h3 id="urgent-heading">Urgent<\/h3>/);
-  assert.match(container.innerHTML, /<h4>Whole Milk<\/h4>/);
+  assert.match(
+    container.innerHTML,
+    /<h1 id="priority-headline">Four cases are at the red line\.<\/h1>/,
+  );
+  assert.match(container.innerHTML, /class="freshroute-hero-brand"/);
+  assert.match(container.innerHTML, />FreshRoute<\/span>/);
+  assert.match(container.innerHTML, /class="priority-rail"/);
+});
+
+test('nests product headings beneath their status groups', () => {
+  const evaluatedProducts = sortEvaluatedProducts(
+    products.map(evaluateProduct),
+  );
+  const container = { innerHTML: '' };
+
+  renderDashboard(
+    container,
+    evaluatedProducts,
+    getStatusCounts(evaluatedProducts),
+  );
+
+  assert.match(
+    container.innerHTML,
+    /<h2 id="urgent-heading">Urgent action queue · 4 cases<\/h2>/,
+  );
+  assert.match(container.innerHTML, /<h3>Whole Milk<\/h3>/);
 });

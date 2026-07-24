@@ -1,0 +1,1468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockWatch visual directions</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-synthesis: none;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      svg {
+        display: block;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .brand-lockup {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.72rem;
+      }
+
+      .brand-mark {
+        width: 2.35rem;
+        height: 2.35rem;
+        flex: 0 0 auto;
+      }
+
+      .brand-name,
+      .brand-product,
+      h1,
+      h2,
+      h3,
+      h4,
+      p {
+        margin-top: 0;
+      }
+
+      .brand-name,
+      .brand-product {
+        margin-bottom: 0;
+      }
+
+      .eyebrow,
+      .utility,
+      dt,
+      .case-id,
+      .signal-code,
+      .status-name {
+        font-family: "Cascadia Mono", "Consolas", monospace;
+      }
+
+      .status-icon {
+        display: inline-grid;
+        width: 1.55rem;
+        height: 1.55rem;
+        place-items: center;
+        border: 1px solid currentColor;
+        border-radius: 50%;
+        font: 700 0.78rem/1 "Cascadia Mono", "Consolas", monospace;
+      }
+
+      .direction-field-desk {
+        --field-green: #0b4d3a;
+        --leaf-green: #3f765a;
+        --creamery-paper: #f3eddf;
+        --milk-white: #fffdf7;
+        --crate-ink: #17372e;
+        --route-line: #c9d0bd;
+        --urgent: #bb353b;
+        --urgent-soft: #f7e7e3;
+        --amber: #a96f13;
+        --ochre: #82681a;
+        --safe: #2d6d51;
+        min-height: 100vh;
+        color: var(--crate-ink);
+        background:
+          linear-gradient(90deg, transparent 0 4.2rem, rgba(11, 77, 58, 0.06) 4.2rem 4.25rem, transparent 4.25rem),
+          var(--creamery-paper);
+        font-family: "Aptos", "Segoe UI", sans-serif;
+      }
+
+      .direction-field-desk .page-shell {
+        width: min(1220px, calc(100% - 3rem));
+        margin: 0 auto;
+        padding: 1.4rem 0 4.5rem;
+      }
+
+      .direction-field-desk .masthead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(23, 55, 46, 0.22);
+      }
+
+      .direction-field-desk .brand-name {
+        font: 750 1rem/1 "Bahnschrift", "Arial Narrow", sans-serif;
+        letter-spacing: -0.02em;
+      }
+
+      .direction-field-desk .brand-product {
+        margin-top: 0.16rem;
+        color: #557067;
+        font-size: 0.72rem;
+      }
+
+      .direction-field-desk .masthead-note {
+        margin: 0;
+        color: #5d726a;
+        font-size: 0.8rem;
+      }
+
+      .direction-field-desk .briefing {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 0.55fr);
+        gap: 3rem;
+        align-items: end;
+        padding: 3.8rem 0 2.7rem;
+      }
+
+      .direction-field-desk .eyebrow {
+        margin-bottom: 0.8rem;
+        color: var(--leaf-green);
+        font-size: 0.69rem;
+        font-weight: 700;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+
+      .direction-field-desk h1 {
+        max-width: 16ch;
+        margin-bottom: 0.8rem;
+        font: 720 clamp(3.35rem, 6.5vw, 6.25rem)/0.92 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+        letter-spacing: -0.045em;
+      }
+
+      .direction-field-desk .briefing-copy {
+        max-width: 48ch;
+        margin-bottom: 0;
+        color: #536b62;
+        font-size: 1.05rem;
+        line-height: 1.55;
+      }
+
+      .direction-field-desk .run-card {
+        position: relative;
+        overflow: hidden;
+        padding: 1.25rem 1.35rem 1.2rem;
+        border: 1px solid rgba(11, 77, 58, 0.27);
+        background: rgba(255, 253, 247, 0.72);
+        box-shadow: 0 14px 30px rgba(40, 54, 48, 0.06);
+      }
+
+      .direction-field-desk .run-card::after {
+        position: absolute;
+        right: -0.2rem;
+        bottom: -1.7rem;
+        color: rgba(11, 77, 58, 0.07);
+        content: "FR";
+        font: 800 6rem/1 "Bahnschrift", sans-serif;
+        letter-spacing: -0.08em;
+      }
+
+      .direction-field-desk .run-card p {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 0;
+      }
+
+      .direction-field-desk .run-date {
+        font: 720 1.45rem/1.1 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+      }
+
+      .direction-field-desk .run-meta {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.9rem;
+        margin-top: 1.2rem;
+      }
+
+      .direction-field-desk .run-meta span {
+        display: block;
+        margin-bottom: 0.22rem;
+        color: #6d7f78;
+        font-size: 0.68rem;
+      }
+
+      .direction-field-desk .run-meta strong {
+        font: 720 1.05rem/1 "Bahnschrift", sans-serif;
+      }
+
+      .direction-field-desk .status-manifest {
+        display: grid;
+        grid-template-columns: 1.2fr repeat(4, 1fr);
+        border-top: 1px solid rgba(23, 55, 46, 0.25);
+        border-bottom: 1px solid rgba(23, 55, 46, 0.25);
+        background: rgba(255, 253, 247, 0.36);
+      }
+
+      .direction-field-desk .manifest-label,
+      .direction-field-desk .manifest-item {
+        min-height: 6.6rem;
+        padding: 1rem 1.1rem;
+      }
+
+      .direction-field-desk .manifest-label {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-right: 1px solid rgba(23, 55, 46, 0.2);
+      }
+
+      .direction-field-desk .manifest-label strong {
+        font: 720 1.2rem/1.1 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+      }
+
+      .direction-field-desk .manifest-label span {
+        color: #586b63;
+        font-size: 0.75rem;
+      }
+
+      .direction-field-desk .manifest-item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.65rem;
+        align-content: center;
+        border-right: 1px solid rgba(23, 55, 46, 0.13);
+      }
+
+      .direction-field-desk .manifest-item:last-child {
+        border-right: 0;
+      }
+
+      .direction-field-desk .manifest-item strong {
+        align-self: center;
+        grid-row: span 2;
+        font: 720 2.1rem/1 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+      }
+
+      .direction-field-desk .manifest-item span {
+        align-self: end;
+        font-size: 0.79rem;
+        font-weight: 700;
+      }
+
+      .direction-field-desk .manifest-item small {
+        align-self: start;
+        color: #586b63;
+        font-size: 0.65rem;
+      }
+
+      .direction-field-desk .manifest-urgent {
+        color: var(--urgent);
+      }
+
+      .direction-field-desk .manifest-low {
+        color: var(--amber);
+      }
+
+      .direction-field-desk .manifest-soon {
+        color: var(--ochre);
+      }
+
+      .direction-field-desk .manifest-safe {
+        color: var(--safe);
+      }
+
+      .direction-field-desk .queue {
+        padding-top: 3.3rem;
+      }
+
+      .direction-field-desk .queue-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 2rem;
+        padding-bottom: 1.1rem;
+        border-bottom: 1px solid rgba(23, 55, 46, 0.24);
+      }
+
+      .direction-field-desk h2 {
+        margin-bottom: 0;
+        font: 720 clamp(2.2rem, 4vw, 3.6rem)/0.95 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+        letter-spacing: -0.035em;
+      }
+
+      .direction-field-desk .queue-heading > p {
+        max-width: 33ch;
+        margin-bottom: 0;
+        color: #61756d;
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .direction-field-desk .status-group {
+        padding: 1.45rem 0 0 2.6rem;
+      }
+
+      .direction-field-desk .status-group-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .direction-field-desk .status-group-header h3 {
+        margin-bottom: 0;
+        font: 720 1.55rem/1 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+      }
+
+      .direction-field-desk .status-group-header p {
+        margin-bottom: 0;
+        color: #586b63;
+        font-size: 0.75rem;
+      }
+
+      .direction-field-desk .urgent-group {
+        position: relative;
+      }
+
+      .direction-field-desk .urgent-group::before {
+        position: absolute;
+        top: 2.95rem;
+        bottom: 1.4rem;
+        left: 0.55rem;
+        width: 2px;
+        background: var(--urgent);
+        content: "";
+      }
+
+      .direction-field-desk .urgent-group::after {
+        position: absolute;
+        top: 2.67rem;
+        left: 0.25rem;
+        width: 0.65rem;
+        height: 0.65rem;
+        border: 2px solid var(--creamery-paper);
+        border-radius: 50%;
+        background: var(--urgent);
+        box-shadow: 0 0 0 1px var(--urgent);
+        content: "";
+      }
+
+      .direction-field-desk .product-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+      }
+
+      .direction-field-desk .product-card {
+        position: relative;
+        min-width: 0;
+        padding: 1.05rem 1.15rem 1rem;
+        border: 1px solid rgba(23, 55, 46, 0.17);
+        background: var(--milk-white);
+        box-shadow: 0 10px 24px rgba(40, 54, 48, 0.05);
+      }
+
+      .direction-field-desk .urgent-card {
+        border-left: 0.32rem solid var(--urgent);
+        animation: field-desk-arrival 650ms ease-out 2;
+      }
+
+      .direction-field-desk .urgent-card::before {
+        position: absolute;
+        top: 50%;
+        left: -3.25rem;
+        width: 0.78rem;
+        height: 0.78rem;
+        border: 2px solid var(--creamery-paper);
+        border-radius: 50%;
+        background: var(--urgent);
+        box-shadow: 0 0 0 1px var(--urgent);
+        content: "";
+        transform: translateY(-50%);
+      }
+
+      @keyframes field-desk-arrival {
+        0%,
+        100% {
+          box-shadow: 0 10px 24px rgba(40, 54, 48, 0.05);
+        }
+        45% {
+          box-shadow: 0 10px 24px rgba(187, 53, 59, 0.2);
+        }
+      }
+
+      .direction-field-desk .card-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 0.78rem;
+        border-bottom: 1px solid rgba(23, 55, 46, 0.12);
+      }
+
+      .direction-field-desk .product-kicker {
+        margin-bottom: 0.25rem;
+        color: #586b63;
+        font-size: 0.7rem;
+      }
+
+      .direction-field-desk h4 {
+        margin-bottom: 0;
+        font: 720 1.35rem/1.05 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+      }
+
+      .direction-field-desk .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: var(--urgent);
+        font-size: 0.71rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .direction-field-desk .card-body {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 1rem;
+        padding-top: 0.9rem;
+      }
+
+      .direction-field-desk .reason-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .direction-field-desk .reason-list li {
+        position: relative;
+        margin-top: 0.38rem;
+        padding-left: 0.85rem;
+        color: #3f5a51;
+        font-size: 0.76rem;
+        line-height: 1.35;
+      }
+
+      .direction-field-desk .reason-list li::before {
+        position: absolute;
+        top: 0.46em;
+        left: 0;
+        width: 0.32rem;
+        height: 0.32rem;
+        border-radius: 50%;
+        background: var(--urgent);
+        content: "";
+      }
+
+      .direction-field-desk .case-facts {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.55rem;
+        margin: 0;
+      }
+
+      .direction-field-desk .case-facts div {
+        border-left: 1px solid var(--route-line);
+        padding-left: 0.58rem;
+      }
+
+      .direction-field-desk dt {
+        color: #586b63;
+        font-size: 0.58rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .direction-field-desk dd {
+        margin: 0.15rem 0 0;
+        font: 720 0.94rem/1.1 "Bahnschrift", sans-serif;
+      }
+
+      .direction-field-desk .action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        margin: 0.88rem 0 0;
+        padding-top: 0.7rem;
+        border-top: 1px dashed rgba(23, 55, 46, 0.24);
+        color: var(--urgent);
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .direction-field-desk .other-groups {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.9rem;
+        margin-top: 2.4rem;
+      }
+
+      .direction-field-desk .compact-group {
+        border-top: 0.24rem solid var(--group-color);
+        background: rgba(255, 253, 247, 0.7);
+      }
+
+      .direction-field-desk .compact-group header {
+        padding: 1rem 1rem 0.7rem;
+      }
+
+      .direction-field-desk .compact-group h3 {
+        margin-bottom: 0.15rem;
+        font: 720 1.2rem/1 "Bahnschrift SemiCondensed", sans-serif;
+      }
+
+      .direction-field-desk .compact-group header p {
+        margin-bottom: 0;
+        color: #586b63;
+        font-size: 0.68rem;
+      }
+
+      .direction-field-desk .compact-product {
+        padding: 0.78rem 1rem;
+        border-top: 1px solid rgba(23, 55, 46, 0.12);
+      }
+
+      .direction-field-desk .compact-product strong {
+        display: block;
+        margin-bottom: 0.18rem;
+        font-size: 0.86rem;
+      }
+
+      .direction-field-desk .compact-product span {
+        color: #586b63;
+        font-size: 0.7rem;
+      }
+
+      .direction-v2 {
+        --chiller-blue: #123d49;
+        --deep-blue: #082c36;
+        --ice-paper: #e8f0ef;
+        --milk-white: #fbfcf8;
+        --steel: #4c676d;
+        --line: #9fb0af;
+        --signal-red: #d9413e;
+        --signal-red-dark: #a9282a;
+        --warning: #e3a22d;
+        --soon: #b9a044;
+        --safe: #3c775f;
+        min-height: 100vh;
+        color: var(--deep-blue);
+        background:
+          repeating-linear-gradient(0deg, transparent 0 39px, rgba(18, 61, 73, 0.055) 39px 40px),
+          var(--ice-paper);
+        font-family: "Segoe UI", "Aptos", sans-serif;
+      }
+
+      .direction-v2 .board-shell {
+        width: min(1280px, calc(100% - 2.5rem));
+        margin: 0 auto;
+        padding: 1rem 0 4rem;
+      }
+
+      .direction-v2 .board-header {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 1.5rem;
+        align-items: center;
+        padding: 0.65rem 0 1rem;
+        border-bottom: 0.28rem solid var(--chiller-blue);
+      }
+
+      .direction-v2 .brand-name {
+        font: 750 0.95rem/1 "Bahnschrift", sans-serif;
+      }
+
+      .direction-v2 .brand-product {
+        margin-top: 0.13rem;
+        color: var(--steel);
+        font-size: 0.67rem;
+      }
+
+      .direction-v2 .dock-meta,
+      .direction-v2 .board-date {
+        margin: 0;
+      }
+
+      .direction-v2 .dock-meta {
+        color: var(--steel);
+        font-size: 0.73rem;
+      }
+
+      .direction-v2 .board-date {
+        padding: 0.5rem 0.7rem;
+        border: 1px solid var(--chiller-blue);
+        background: var(--milk-white);
+        font: 700 0.7rem/1.2 "Cascadia Mono", "Consolas", monospace;
+        text-transform: uppercase;
+      }
+
+      .direction-v2 .signal-board {
+        display: grid;
+        grid-template-columns: 11.5rem minmax(0, 1fr);
+        gap: 1.1rem;
+        padding-top: 1.1rem;
+      }
+
+      .direction-v2 .priority-rail {
+        align-self: start;
+        border: 1px solid var(--chiller-blue);
+        background: rgba(251, 252, 248, 0.74);
+      }
+
+      .direction-v2 .rail-title {
+        padding: 0.8rem;
+        color: var(--milk-white);
+        background: var(--chiller-blue);
+      }
+
+      .direction-v2 .rail-title p,
+      .direction-v2 .rail-title strong {
+        display: block;
+        margin: 0;
+      }
+
+      .direction-v2 .rail-title p {
+        margin-bottom: 0.22rem;
+        font: 650 0.58rem/1.2 "Cascadia Mono", "Consolas", monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .direction-v2 .rail-title strong {
+        font: 700 1.1rem/1 "Bahnschrift SemiCondensed", sans-serif;
+      }
+
+      .direction-v2 .rail-item {
+        display: grid;
+        grid-template-columns: 0.42rem 1fr auto;
+        gap: 0.58rem;
+        align-items: center;
+        min-height: 4.4rem;
+        padding-right: 0.75rem;
+        border-bottom: 1px solid rgba(18, 61, 73, 0.2);
+      }
+
+      .direction-v2 .rail-item:last-child {
+        border-bottom: 0;
+      }
+
+      .direction-v2 .rail-signal {
+        align-self: stretch;
+        background: var(--rail-color);
+      }
+
+      .direction-v2 .rail-name {
+        font-size: 0.68rem;
+        font-weight: 700;
+      }
+
+      .direction-v2 .rail-count {
+        font: 730 1.9rem/1 "Bahnschrift SemiCondensed", sans-serif;
+      }
+
+      .direction-v2 .board-main {
+        min-width: 0;
+      }
+
+      .direction-v2 .board-hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(17rem, 0.6fr);
+        gap: 1.5rem;
+        align-items: end;
+        overflow: hidden;
+        padding: 1.9rem 2rem 1.7rem;
+        color: var(--milk-white);
+        background: var(--chiller-blue);
+      }
+
+      .direction-v2 .board-hero::after {
+        position: absolute;
+        top: 0;
+        right: -2rem;
+        width: 16rem;
+        height: 100%;
+        background: repeating-linear-gradient(135deg, transparent 0 13px, rgba(255, 255, 255, 0.08) 13px 24px);
+        content: "";
+        transform: skewX(-10deg);
+      }
+
+      .direction-v2 .eyebrow {
+        margin-bottom: 0.55rem;
+        color: #c8dad8;
+        font: 650 0.64rem/1.2 "Cascadia Mono", "Consolas", monospace;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .direction-v2 h1 {
+        position: relative;
+        z-index: 1;
+        max-width: 14ch;
+        margin-bottom: 0;
+        font: 740 clamp(2.5rem, 5.1vw, 4.85rem)/0.9 "Bahnschrift SemiCondensed", "Arial Narrow", sans-serif;
+        letter-spacing: -0.035em;
+      }
+
+      .direction-v2 .hero-brief {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        padding-left: 1rem;
+        border-left: 0.3rem solid var(--signal-red);
+        color: #d7e3e1;
+        font-size: 0.83rem;
+        line-height: 1.48;
+      }
+
+      .direction-v2 .hero-brief strong {
+        display: block;
+        margin-bottom: 0.3rem;
+        color: #fff;
+        font: 730 1.15rem/1.1 "Bahnschrift", sans-serif;
+      }
+
+      .direction-v2 .urgent-board {
+        margin-top: 1rem;
+        border: 1px solid var(--chiller-blue);
+        background: rgba(251, 252, 248, 0.8);
+      }
+
+      .direction-v2 .urgent-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.8rem;
+        align-items: center;
+        padding: 0.72rem 0.9rem;
+        color: #fff;
+        background: var(--signal-red-dark);
+      }
+
+      .direction-v2 .urgent-header .signal-code {
+        padding: 0.23rem 0.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        font-size: 0.58rem;
+      }
+
+      .direction-v2 .urgent-header h2 {
+        margin: 0;
+        font: 730 1.3rem/1 "Bahnschrift SemiCondensed", sans-serif;
+      }
+
+      .direction-v2 .urgent-header p {
+        margin: 0;
+        font: 600 0.62rem/1.2 "Cascadia Mono", "Consolas", monospace;
+        letter-spacing: 0.04em;
+      }
+
+      .direction-v2 .signal-cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .direction-v2 .signal-card {
+        position: relative;
+        min-width: 0;
+        padding: 1rem;
+        border-right: 1px solid rgba(18, 61, 73, 0.18);
+        border-bottom: 1px solid rgba(18, 61, 73, 0.18);
+      }
+
+      .direction-v2 .signal-card:nth-child(2n) {
+        border-right: 0;
+      }
+
+      .direction-v2 .signal-card:nth-last-child(-n + 2) {
+        border-bottom: 0;
+      }
+
+      .direction-v2 .case-topline {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 0.8rem;
+      }
+
+      .direction-v2 .case-id {
+        margin: 0;
+        color: var(--steel);
+        font-size: 0.59rem;
+        letter-spacing: 0.04em;
+      }
+
+      .direction-v2 .pressure-tag {
+        padding: 0.38rem 0.5rem;
+        color: var(--signal-red-dark);
+        border: 1px solid var(--signal-red);
+        background: #fff2ed;
+        font: 700 0.62rem/1 "Cascadia Mono", "Consolas", monospace;
+        white-space: nowrap;
+      }
+
+      .direction-v2 h3 {
+        margin: 0.4rem 0 0.28rem;
+        font: 730 1.36rem/1 "Bahnschrift SemiCondensed", sans-serif;
+      }
+
+      .direction-v2 .case-brand {
+        margin-bottom: 0.72rem;
+        color: var(--steel);
+        font-size: 0.7rem;
+      }
+
+      .direction-v2 .signal-facts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.35rem;
+        margin: 0;
+      }
+
+      .direction-v2 .signal-facts div {
+        padding-top: 0.52rem;
+        border-top: 0.18rem solid rgba(18, 61, 73, 0.2);
+      }
+
+      .direction-v2 .signal-facts .critical-fact {
+        border-top-color: var(--signal-red);
+      }
+
+      .direction-v2 dt {
+        color: var(--steel);
+        font-size: 0.53rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .direction-v2 dd {
+        margin: 0.18rem 0 0;
+        font: 720 0.93rem/1 "Bahnschrift", sans-serif;
+      }
+
+      .direction-v2 .signal-reason {
+        margin: 0.7rem 0 0;
+        padding-top: 0.65rem;
+        border-top: 1px dashed rgba(18, 61, 73, 0.3);
+        color: #365b63;
+        font-size: 0.72rem;
+        line-height: 1.38;
+      }
+
+      .direction-v2 .signal-action {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.6rem;
+        margin: 0.65rem 0 0;
+        color: var(--signal-red-dark);
+        font-size: 0.71rem;
+        font-weight: 750;
+      }
+
+      .direction-v2 .remaining-board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.7rem;
+        margin-top: 0.8rem;
+      }
+
+      .direction-v2 .board-lane {
+        border: 1px solid rgba(18, 61, 73, 0.38);
+        background: rgba(251, 252, 248, 0.72);
+      }
+
+      .direction-v2 .board-lane header {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.65rem 0.75rem;
+        border-top: 0.26rem solid var(--lane-color);
+      }
+
+      .direction-v2 .board-lane h2 {
+        margin: 0;
+        font: 720 0.95rem/1 "Bahnschrift SemiCondensed", sans-serif;
+      }
+
+      .direction-v2 .board-lane header span {
+        font: 700 0.7rem/1 "Cascadia Mono", monospace;
+      }
+
+      .direction-v2 .lane-product {
+        padding: 0.65rem 0.75rem;
+        border-top: 1px solid rgba(18, 61, 73, 0.14);
+      }
+
+      .direction-v2 .lane-product strong {
+        display: block;
+        margin-bottom: 0.16rem;
+        font-size: 0.78rem;
+      }
+
+      .direction-v2 .lane-product span {
+        color: var(--steel);
+        font-size: 0.65rem;
+      }
+
+      @media (max-width: 760px) {
+        .direction-field-desk {
+          background:
+            linear-gradient(90deg, transparent 0 1.5rem, rgba(11, 77, 58, 0.06) 1.5rem 1.55rem, transparent 1.55rem),
+            var(--creamery-paper);
+        }
+
+        .direction-field-desk .page-shell,
+        .direction-v2 .board-shell {
+          width: min(100% - 1.4rem, 42rem);
+        }
+
+        .direction-field-desk .masthead-note,
+        .direction-v2 .dock-meta {
+          display: none;
+        }
+
+        .direction-field-desk .briefing {
+          grid-template-columns: 1fr;
+          gap: 1.25rem;
+          padding: 2.3rem 0 1.45rem;
+        }
+
+        .direction-field-desk h1 {
+          max-width: 11ch;
+          margin-bottom: 0.55rem;
+          font-size: clamp(3rem, 15vw, 4.4rem);
+        }
+
+        .direction-field-desk .briefing-copy {
+          font-size: 0.9rem;
+        }
+
+        .direction-field-desk .run-card {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          align-items: end;
+          padding: 0.8rem 0.9rem;
+        }
+
+        .direction-field-desk .run-card .eyebrow {
+          margin-bottom: 0.35rem;
+        }
+
+        .direction-field-desk .run-date {
+          font-size: 1.1rem;
+        }
+
+        .direction-field-desk .run-meta {
+          grid-template-columns: auto;
+          gap: 0.25rem;
+          margin-top: 0;
+          text-align: right;
+        }
+
+        .direction-field-desk .run-meta div:last-child {
+          display: none;
+        }
+
+        .direction-field-desk .status-manifest {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .direction-field-desk .manifest-label {
+          grid-column: 1 / -1;
+          min-height: auto;
+          flex-direction: row;
+          align-items: center;
+          gap: 1rem;
+          padding: 0.65rem 0.75rem;
+          border-right: 0;
+          border-bottom: 1px solid rgba(23, 55, 46, 0.2);
+        }
+
+        .direction-field-desk .manifest-label strong {
+          font-size: 0.95rem;
+        }
+
+        .direction-field-desk .manifest-item {
+          min-height: 4.3rem;
+          grid-template-columns: 1fr;
+          gap: 0.1rem;
+          padding: 0.65rem 0.45rem;
+          text-align: center;
+        }
+
+        .direction-field-desk .manifest-item strong {
+          grid-row: auto;
+          font-size: 1.65rem;
+        }
+
+        .direction-field-desk .manifest-item span {
+          font-size: 0.58rem;
+        }
+
+        .direction-field-desk .manifest-item small {
+          display: none;
+        }
+
+        .direction-field-desk .queue {
+          padding-top: 1.65rem;
+        }
+
+        .direction-field-desk .queue-heading {
+          align-items: start;
+          padding-bottom: 0.8rem;
+        }
+
+        .direction-field-desk .queue-heading > p {
+          display: none;
+        }
+
+        .direction-field-desk h2 {
+          font-size: 2.15rem;
+        }
+
+        .direction-field-desk .status-group {
+          padding: 1rem 0 0 1.55rem;
+        }
+
+        .direction-field-desk .status-group-header p {
+          display: none;
+        }
+
+        .direction-field-desk .urgent-group::before {
+          left: 0.25rem;
+        }
+
+        .direction-field-desk .urgent-group::after {
+          left: -0.05rem;
+        }
+
+        .direction-field-desk .product-grid,
+        .direction-field-desk .other-groups {
+          grid-template-columns: 1fr;
+        }
+
+        .direction-field-desk .urgent-card::before {
+          left: -2.1rem;
+        }
+
+        .direction-field-desk .card-body {
+          grid-template-columns: 1fr;
+        }
+
+        .direction-field-desk .case-facts {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .direction-field-desk .other-groups {
+          margin-top: 1.4rem;
+        }
+
+        .direction-v2 .board-header {
+          grid-template-columns: 1fr auto;
+          gap: 0.8rem;
+        }
+
+        .direction-v2 .board-date {
+          font-size: 0.58rem;
+        }
+
+        .direction-v2 .signal-board {
+          grid-template-columns: 1fr;
+          gap: 0.72rem;
+        }
+
+        .direction-v2 .priority-rail {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          border: 0;
+          background: transparent;
+        }
+
+        .direction-v2 .rail-title {
+          display: none;
+        }
+
+        .direction-v2 .rail-item {
+          min-height: 3.7rem;
+          grid-template-columns: 0.25rem 1fr;
+          gap: 0.35rem;
+          padding-right: 0.35rem;
+          border: 1px solid rgba(18, 61, 73, 0.28);
+          border-right: 0;
+          background: rgba(251, 252, 248, 0.8);
+        }
+
+        .direction-v2 .rail-item:last-child {
+          border-right: 1px solid rgba(18, 61, 73, 0.28);
+        }
+
+        .direction-v2 .rail-count {
+          grid-column: 2;
+          grid-row: 1;
+          align-self: end;
+          font-size: 1.45rem;
+        }
+
+        .direction-v2 .rail-name {
+          grid-column: 2;
+          align-self: start;
+          font-size: 0.52rem;
+        }
+
+        .direction-v2 .rail-signal {
+          grid-row: 1 / span 2;
+        }
+
+        .direction-v2 .board-hero {
+          grid-template-columns: 1fr;
+          gap: 0.85rem;
+          padding: 1.25rem 1.1rem 1.15rem;
+        }
+
+        .direction-v2 h1 {
+          max-width: 12ch;
+          font-size: clamp(2.45rem, 12vw, 3.4rem);
+        }
+
+        .direction-v2 .hero-brief {
+          font-size: 0.72rem;
+        }
+
+        .direction-v2 .urgent-header {
+          grid-template-columns: auto 1fr;
+        }
+
+        .direction-v2 .urgent-header p {
+          display: none;
+        }
+
+        .direction-v2 .signal-cards,
+        .direction-v2 .remaining-board {
+          grid-template-columns: 1fr;
+        }
+
+        .direction-v2 .signal-card {
+          border-right: 0;
+          border-bottom: 1px solid rgba(18, 61, 73, 0.18);
+        }
+
+        .direction-v2 .signal-card:nth-last-child(-n + 2) {
+          border-bottom: 1px solid rgba(18, 61, 73, 0.18);
+        }
+
+        .direction-v2 .signal-card:last-child {
+          border-bottom: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .direction-field-desk .urgent-card {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mockup" aria-live="polite"></div>
+    <script type="module">
+      import {
+        evaluateProduct,
+        getStatusCounts,
+        sortEvaluatedProducts,
+      } from "../../inventory-evaluator.js";
+
+      const STATUS_GROUPS = ["Urgent", "Low Stock", "Expiring Soon", "Safe"];
+      const STATUS_CLASS = {
+        Urgent: "urgent",
+        "Low Stock": "low",
+        "Expiring Soon": "soon",
+        Safe: "safe",
+      };
+      const STATUS_ICON = {
+        Urgent: "!",
+        "Low Stock": "↓",
+        "Expiring Soon": "◷",
+        Safe: "✓",
+      };
+      const GROUP_COLOR = {
+        "Low Stock": "#a96f13",
+        "Expiring Soon": "#82681a",
+        Safe: "#2d6d51",
+      };
+
+      const formatStockout = (days) =>
+        days === null ? "Not projected" : `${days.toFixed(1)} d`;
+
+      const formatExpiration = (product) =>
+        `${product.daysUntilExpiration} d`;
+
+      function freshRouteMark() {
+        return `
+          <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true">
+            <rect x="1" y="1" width="42" height="42" rx="11" fill="#0b4d3a"/>
+            <path d="M11 29c7 0 7-14 14-14h8" fill="none" stroke="#f3eddf" stroke-width="3" stroke-linecap="round"/>
+            <path d="m29 10 6 5-6 5" fill="none" stroke="#f3eddf" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 25c-4-6 0-11 7-11 0 7-3 11-7 11Z" fill="#9ec59b"/>
+          </svg>`;
+      }
+
+      function brandLockup() {
+        return `
+          <div class="brand-lockup" aria-label="FreshRoute StockWatch">
+            ${freshRouteMark()}
+            <div>
+              <p class="brand-name">FreshRoute</p>
+              <p class="brand-product">StockWatch · dairy inventory</p>
+            </div>
+          </div>`;
+      }
+
+      function v2Manifest(counts) {
+        const detail = {
+          Urgent: "today",
+          "Low Stock": "replenish",
+          "Expiring Soon": "rotate",
+          Safe: "stable",
+        };
+        return `
+          <section class="status-manifest" aria-labelledby="field-desk-manifest-heading">
+            <div class="manifest-label">
+              <strong id="field-desk-manifest-heading">Case manifest</strong>
+              <span>8 products evaluated</span>
+            </div>
+            ${STATUS_GROUPS.map(
+              (status) => `
+                <article class="manifest-item manifest-${STATUS_CLASS[status]}">
+                  <strong>${counts[status]}</strong>
+                  <span>${STATUS_ICON[status]} ${status}</span>
+                  <small>${detail[status]}</small>
+                </article>`,
+            ).join("")}
+          </section>`;
+      }
+
+      function v2UrgentCard(product) {
+        return `
+          <article class="product-card urgent-card">
+            <div class="card-head">
+              <div>
+                <p class="product-kicker">${product.category} · ${product.brand}</p>
+                <h4>${product.productName}</h4>
+              </div>
+              <span class="status-chip"><span class="status-icon" aria-hidden="true">!</span> Urgent</span>
+            </div>
+            <div class="card-body">
+              <ul class="reason-list" aria-label="Status reasons">
+                ${product.reasons.map((reason) => `<li>${reason}</li>`).join("")}
+              </ul>
+              <dl class="case-facts">
+                <div><dt>On hand</dt><dd>${product.quantityOnHand}</dd></div>
+                <div><dt>Threshold</dt><dd>${product.reorderThreshold}</dd></div>
+                <div><dt>Stockout</dt><dd>${formatStockout(product.daysUntilStockout)}</dd></div>
+                <div><dt>Expires</dt><dd>${formatExpiration(product)}</dd></div>
+              </dl>
+            </div>
+            <p class="action"><span>Recommended action</span><span>${product.recommendedAction} →</span></p>
+          </article>`;
+      }
+
+      function v2OtherGroups(products) {
+        return STATUS_GROUPS.slice(1).map((status) => {
+          const group = products.filter((product) => product.primaryStatus === status);
+          return `
+            <section class="compact-group" style="--group-color:${GROUP_COLOR[status]}" aria-labelledby="field-desk-${STATUS_CLASS[status]}">
+              <header>
+                <h3 id="field-desk-${STATUS_CLASS[status]}">${STATUS_ICON[status]} ${status}</h3>
+                <p>${group.length} ${group.length === 1 ? "case" : "cases"}</p>
+              </header>
+              ${group.map((product) => `
+                <article class="compact-product">
+                  <strong>${product.productName}</strong>
+                  <span>${product.recommendedAction} · ${product.quantityOnHand} on hand</span>
+                </article>`).join("")}
+            </section>`;
+        }).join("");
+      }
+
+      function renderFieldDesk(products, counts) {
+        const urgent = products.filter((product) => product.primaryStatus === "Urgent");
+        return `
+          <div class="direction-field-desk">
+            <div class="page-shell">
+              <header class="masthead">
+                ${brandLockup()}
+                <p class="masthead-note utility">Route operations · Morning field desk</p>
+              </header>
+              <section class="briefing" aria-labelledby="field-desk-title">
+                <div>
+                  <p class="eyebrow">Daily route + inventory briefing</p>
+                  <h1 id="field-desk-title">Good morning, Alicia.</h1>
+                  <p class="briefing-copy">Four dairy cases need attention before today’s route leaves the dock.</p>
+                </div>
+                <aside class="run-card" aria-label="Demo inventory briefing details">
+                  <div>
+                    <p class="eyebrow">Demo inventory date</p>
+                    <p class="run-date"><time datetime="2026-07-22">July 22, 2026</time></p>
+                  </div>
+                  <div class="run-meta">
+                    <div><span>Priority cases</span><strong>4 today</strong></div>
+                    <div><span>Inventory read</span><strong>8 / 8</strong></div>
+                  </div>
+                </aside>
+              </section>
+              ${v2Manifest(counts)}
+              <main class="queue">
+                <div class="queue-heading">
+                  <div>
+                    <p class="eyebrow">Needs attention today</p>
+                    <h2>Route the urgent cases first.</h2>
+                  </div>
+                  <p>The path begins with the shortest projected stockout and continues through all flagged inventory.</p>
+                </div>
+                <section class="status-group urgent-group" aria-labelledby="field-desk-urgent">
+                  <div class="status-group-header">
+                    <h3 id="field-desk-urgent">Urgent · ${urgent.length} cases</h3>
+                    <p>Immediate action is needed</p>
+                  </div>
+                  <div class="product-grid">
+                    ${urgent.map(v2UrgentCard).join("")}
+                  </div>
+                </section>
+                <div class="other-groups">${v2OtherGroups(products)}</div>
+              </main>
+            </div>
+          </div>`;
+      }
+
+      function v2Rail(counts) {
+        const railColor = {
+          Urgent: "#d9413e",
+          "Low Stock": "#e3a22d",
+          "Expiring Soon": "#b9a044",
+          Safe: "#3c775f",
+        };
+        return `
+          <aside class="priority-rail" aria-labelledby="rail-heading">
+            <div class="rail-title">
+              <p>Inventory signal</p>
+              <strong id="rail-heading">Priority rail</strong>
+            </div>
+            ${STATUS_GROUPS.map((status) => `
+              <div class="rail-item" style="--rail-color:${railColor[status]}">
+                <span class="rail-signal" aria-hidden="true"></span>
+                <span class="rail-name">${status}</span>
+                <strong class="rail-count">${counts[status]}</strong>
+              </div>`).join("")}
+          </aside>`;
+      }
+
+      function urgentTiming(product) {
+        if (product.daysUntilStockout !== null && product.daysUntilStockout <= 2) {
+          return `${product.daysUntilStockout.toFixed(1)} d stockout`;
+        }
+        return `${product.daysUntilExpiration} d expiry`;
+      }
+
+      function v2UrgentCard(product) {
+        return `
+          <article class="signal-card">
+            <div class="case-topline">
+              <p class="case-id">${product.id} · ${product.storageCondition}</p>
+              <span class="pressure-tag">! ${urgentTiming(product)}</span>
+            </div>
+            <h3>${product.productName}</h3>
+            <p class="case-brand">${product.category} · ${product.brand}</p>
+            <dl class="signal-facts">
+              <div class="critical-fact"><dt>On hand</dt><dd>${product.quantityOnHand}</dd></div>
+              <div><dt>Threshold</dt><dd>${product.reorderThreshold}</dd></div>
+              <div><dt>Expires</dt><dd>${product.daysUntilExpiration} d</dd></div>
+            </dl>
+            <p class="signal-reason">${product.reasons.join(" · ")}</p>
+            <p class="signal-action"><span>Recommended</span><span>${product.recommendedAction} →</span></p>
+          </article>`;
+      }
+
+      function v2OtherGroups(products, counts) {
+        const laneColor = {
+          "Low Stock": "#e3a22d",
+          "Expiring Soon": "#b9a044",
+          Safe: "#3c775f",
+        };
+        return STATUS_GROUPS.slice(1).map((status) => {
+          const group = products.filter((product) => product.primaryStatus === status);
+          return `
+            <section class="board-lane" style="--lane-color:${laneColor[status]}" aria-labelledby="v2-${STATUS_CLASS[status]}">
+              <header><h2 id="v2-${STATUS_CLASS[status]}">${status}</h2><span>${counts[status]}</span></header>
+              ${group.map((product) => `
+                <article class="lane-product">
+                  <strong>${product.productName}</strong>
+                  <span>${product.recommendedAction} · ${product.quantityOnHand} on hand</span>
+                </article>`).join("")}
+            </section>`;
+        }).join("");
+      }
+
+      function renderV2(products, counts) {
+        const urgent = products.filter((product) => product.primaryStatus === "Urgent");
+        return `
+          <div class="direction-v2">
+            <div class="board-shell">
+              <header class="board-header">
+                ${brandLockup()}
+                <p class="dock-meta utility">Cold-chain review · Receiving bay 01</p>
+                <p class="board-date">Demo date<br><time datetime="2026-07-22">Jul 22 2026</time></p>
+              </header>
+              <div class="signal-board">
+                ${v2Rail(counts)}
+                <main class="board-main">
+                  <section class="board-hero" aria-labelledby="v2-title">
+                    <div>
+                      <p class="eyebrow">Morning inventory signal</p>
+                      <h1 id="v2-title">Four cases are at the red line.</h1>
+                    </div>
+                    <p class="hero-brief"><strong>Start with Whole Milk.</strong>At 1.3 days to projected stockout, it leads today’s action sequence.</p>
+                  </section>
+                  <section class="urgent-board" aria-labelledby="v2-urgent">
+                    <header class="urgent-header">
+                      <span class="signal-code">P1</span>
+                      <h2 id="v2-urgent">Urgent action queue · ${urgent.length} cases</h2>
+                      <p>Immediate action is needed</p>
+                    </header>
+                    <div class="signal-cards">${urgent.map(v2UrgentCard).join("")}</div>
+                  </section>
+                  <div class="remaining-board">${v2OtherGroups(products, counts)}</div>
+                </main>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      async function loadMockup() {
+        const version = new URLSearchParams(window.location.search).get("version") === "field-desk" ? "field-desk" : "v2";
+        const response = await fetch("../../data/sample-inventory.json");
+        const products = sortEvaluatedProducts((await response.json()).map(evaluateProduct));
+        const counts = getStatusCounts(products);
+        document.querySelector("#mockup").innerHTML =
+          version === "v2" ? renderV2(products, counts) : renderFieldDesk(products, counts);
+        document.title = `StockWatch ${version.toUpperCase()} visual direction`;
+      }
+
+      loadMockup();
+    </script>
+  </body>
+</html>

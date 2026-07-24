@@ -2,60 +2,69 @@
 
 ## Current Project State
 
-The first StockWatch feature is implemented and ready for review as uncommitted local changes. The dashboard evaluates the existing eight sample products, prioritizes them with the approved rules, and renders the approved daily inventory briefing.
+The selected V2 Cold-Chain Signal Board implementation is complete in the uncommitted working tree and ready for final review. The live interface uses the lined operations background, red-line priority headline, horizontal signal rail, prominent FreshRoute hero identity, and compact case-based product cards.
 
 ## What Already Works
 
-- The app loads all eight products from `data/sample-inventory.json`.
-- Independent evaluator logic calculates expiration, projected stockout, primary status, all triggered reasons, and display-only recommended actions from the fixed July 22, 2026 demo date.
-- The dashboard shows the expected summary totals: 4 Urgent, 1 Low Stock, 2 Expiring Soon, and 1 Safe.
-- All eight products appear in the approved priority and time-sensitive order.
-- The Modern Food Operations Workspace design is implemented with accessible status labels and icons, expanded work-task cards, responsive desktop and mobile layouts, and structured loading and error states.
-- Automated tests cover the approved rules, sample results, sorting, reason handling, date wording, and heading hierarchy.
+- The app loads and prioritizes all eight products from `data/sample-inventory.json`.
+- Expected totals remain 4 Urgent, 1 Low Stock, 2 Expiring Soon, and 1 Safe.
+- The fixed July 22, 2026 demo date, sorting, reasons, display-only recommendations, and business rules are unchanged.
+- The top-left product lockup reads StockWatch; FreshRoute is the large route/leaf identity inside the hero.
+- Urgent work appears immediately after the red-line hero on desktop and mobile.
+- Status meaning uses labels, icons, text, structure, and accessible colors rather than color alone.
+- Fresh verification at 1280px desktop, 390px mobile, and 320px narrow widths found all eight cards with no horizontal overflow.
+- The README preserves V1 and the current V2 in a concise design-evolution gallery.
+- The saved final V2 desktop and mobile screenshots match the live implementation.
+- The dashboard is no longer a broad live region; the existing error alert remains available for load failures.
+- All 11 automated tests pass, and fresh browser verification found no console warnings or errors.
 
 ## Most Recent Completed Work
 
-Implemented and verified the inventory prioritization dashboard described by the approved functional specification, visual specification, and implementation plan.
+- Implemented the refined V2 design in `index.html`, `dashboard-renderer.js`, and `styles.css`.
+- Added renderer regression tests for the red-line headline, prominent FreshRoute identity, priority rail, and semantic heading hierarchy.
+- Added an accessibility regression test and removed `aria-live="polite"` from the full dashboard container.
+- Preserved earlier screenshots and added:
+  - `docs/screenshots/stockwatch-v2-desktop.png`
+  - `docs/screenshots/stockwatch-v2-mobile.png`
+- Updated `README.md` to identify V2 as current.
 
 ## Next Exact Task
 
-Review the completed uncommitted dashboard implementation. If it is approved, commit the application, test, and handoff changes as a clean implementation checkpoint.
+Design and implement StockWatch V2.1: a functional CSV inventory loader that works in the browser preview while preserving the existing dashboard and prioritization behavior.
 
 ## Settled Decisions
 
-- The MVP answers: “What products need my attention today?”
-- The core product is inventory prioritization using quantity, reorder threshold, sales rate, and expiration date.
-- Product recommendations are display-only.
-- The flow ends when the user marks a product as reviewed; operational actions happen outside StockWatch.
-- The MVP uses sample inventory data and plain HTML, CSS, and JavaScript.
-- The dashboard uses the fixed demo inventory date July 22, 2026.
-- Products have one primary status in this order: Urgent, Low Stock, Expiring Soon, Safe; cards retain all applicable reasons.
-- Urgent covers expired products, stockout within 2 days, and low stock expiring within 3 days. Low Stock is quantity at or below the reorder threshold. Expiring Soon is within 7 days.
-- Expected totals for the current sample data are Urgent 4, Low Stock 1, Expiring Soon 2, and Safe 1.
-- The visual direction is a Modern Food Operations Workspace: a warm, professional daily briefing with an inventory-health summary, prioritized work-task cards, accessible status treatments, and priority-first responsive behavior.
-- Automatic orders, supplier contact, report generation, accounts, multiple warehouses, live integrations, and advanced forecasting are out of scope.
+- V2 Cold-Chain Signal Board is the current visual direction.
+- The primary headline is “Four cases are at the red line.”
+- StockWatch owns the top-left product position.
+- FreshRoute name and route/leaf icon are large and prominent in the hero.
+- The lined workspace background remains.
+- The earlier diagonal hero stripes and vertical split layout are removed.
+- Product scope, data source, calculations, totals, sorting, and recommendations remain unchanged in V2.
+- V2.1 is the planned browser-based CSV inventory loader update; it has not been designed or implemented.
+- No new dependencies, features, commit, push, or deployment are authorized.
 
 ## Unresolved Decisions or Blockers
 
-- How reviewed status will persist between page loads has not been decided.
-- Reviewed-state interaction is outside this first feature slice and has not been implemented.
-- There are no blockers for reviewing the completed dashboard.
+- No implementation blockers are known; the remaining gate is final review before a commit decision.
+- Reviewed-state persistence remains outside this feature slice.
 
 ## Verification Commands
 
-Run these from the repository root:
+Run from the repository root:
 
 ```powershell
-git status --short --branch
-Get-Content -Raw data/sample-inventory.json | ConvertFrom-Json | Measure-Object
 node --test tests/inventory-evaluator.test.js tests/dashboard-renderer.test.js
+git diff --check
+git status --short --branch
 ```
 
-Serve the repository with a local static server, then confirm:
+Serve the repository and verify:
 
-- all eight sample products appear;
-- counts are 4 Urgent, 1 Low Stock, 2 Expiring Soon, and 1 Safe;
-- status groups and products follow the approved order;
-- desktop and narrow mobile layouts preserve all reasoning and actions;
-- temporarily unavailable inventory data produces the operational error state; and
+- all eight products render;
+- counts are 4 / 1 / 2 / 1;
+- Whole Milk leads the urgent queue;
+- desktop, 390px mobile, and 320px layouts do not overflow;
+- status labels and headings remain understandable without color;
+- loading and error states preserve the board structure and recovery guidance; and
 - the browser console has no errors.

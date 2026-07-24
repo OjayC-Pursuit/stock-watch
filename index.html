@@ -9,35 +9,40 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="brand-lockup" aria-label="StockWatch">
-        <span class="brand-mark" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
+      <div class="brand-lockup" aria-label="StockWatch by FreshRoute">
+        <svg
+          class="brand-mark"
+          viewBox="0 0 44 44"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <rect x="1" y="1" width="42" height="42" rx="11"></rect>
+          <path
+            class="brand-route"
+            d="M11 29c7 0 7-14 14-14h8"
+          ></path>
+          <path class="brand-arrow" d="m29 10 6 5-6 5"></path>
+          <path
+            class="brand-leaf"
+            d="M13 25c-4-6 0-11 7-11 0 7-3 11-7 11Z"
+          ></path>
+        </svg>
+        <span class="brand-copy">
+          <strong>StockWatch</strong>
+          <span>FreshRoute dairy operations</span>
         </span>
-        <span>StockWatch</span>
       </div>
-
-      <div class="briefing-layout">
-        <div>
-          <p class="eyebrow">Daily inventory briefing</p>
-          <h1>Good morning, Alicia.</h1>
-          <p class="briefing">
-            Here is what needs your attention today.
-          </p>
-        </div>
-        <p class="demo-date">
-          <span>Demo inventory date</span>
-          <time datetime="2026-07-22">July 22, 2026</time>
-        </p>
-      </div>
+      <p class="dock-meta">Cold-chain review · Receiving bay 01</p>
+      <p class="demo-date">
+        <span>Demo inventory date</span>
+        <time datetime="2026-07-22">July 22, 2026</time>
+      </p>
     </header>
 
     <main
       class="dashboard"
       id="app"
       aria-busy="true"
-      aria-live="polite"
     ></main>
 
     <script type="module" src="script.js"></script>

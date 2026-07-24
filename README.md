@@ -73,7 +73,16 @@ Not included:
 
 ## Project Status
 
-StockWatch is currently in the planning and early development stage.
+The first StockWatch inventory-prioritization dashboard is implemented. It evaluates the eight-product sample inventory and presents the approved Urgent, Low Stock, Expiring Soon, and Safe priorities.
 
-The first goal is to build a working dashboard that correctly identifies and prioritizes inventory problems before focusing on advanced features or polished design.
+## Design evolution
+
+The current interface is **V2 · Cold-Chain Signal Board**. The earlier Field Desk and Cold-Chain studies are retained in `docs/screenshots/` as explorations, while the numbered history tracks released dashboard versions.
+
+| Version | Desktop | Mobile |
+| --- | --- | --- |
+| V1 · Original daily briefing | ![V1 desktop](docs/screenshots/stockwatch-v1-desktop.png) | ![V1 mobile](docs/screenshots/stockwatch-v1-mobile.png) |
+| **V2 · Cold-Chain Signal Board (current)** | ![V2 current desktop](docs/screenshots/stockwatch-v2-desktop.png) | ![V2 current mobile](docs/screenshots/stockwatch-v2-mobile.png) |
+
+The planned **V2.1** update will add a functional CSV inventory loader in the browser while preserving the existing dashboard and prioritization behavior.
 
