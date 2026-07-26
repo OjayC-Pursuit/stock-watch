@@ -1,7 +1,81 @@
-productName,category,brand,quantityOnHand,reorderThreshold,salesRatePerDay,expirationDate,id,storageCondition
-Whole Milk,Milk,Hearth Valley,100,10,2,2026-08-20,SAFE-001,Refrigerated
-2 Percent Milk,Milk,Hearth Valley,90,10,2,2026-08-21,SAFE-002,Refrigerated
-Greek Yogurt,Yogurt,Northfield Farms,80,10,2,2026-08-22,SAFE-003,Refrigerated
-Heavy Cream,Cream,FreshRoute Reserve,70,10,2,2026-08-23,SAFE-004,Refrigerated
-Salted Butter,Butter,Meadow Gold,60,10,2,2026-08-24,SAFE-005,Refrigerated
-Sharp Cheddar,Cheese,Cedar Creek,50,10,2,2026-08-25,SAFE-006,Refrigerated
+id,productName,category,brand,quantityOnHand,reorderThreshold,salesRatePerDay,expirationDate,storageCondition
+SAF-001,Whole Milk Retail Case,Milk,FreshRoute Farms,72,12,2,2026-08-10,Refrigerated 34°F
+SAF-002,2% Milk Retail Case,Milk,Meadow Valley,79,13,3,2026-08-11,Refrigerated 36°F
+SAF-003,Skim Milk Retail Case,Milk,North Ridge Dairy,86,14,4,2026-08-12,Cold Room A
+SAF-004,Chocolate Milk Retail Case,Milk,Cedar Lane Creamery,93,15,5,2026-08-13,Chilled dairy case
+SAF-005,Organic Whole Milk Retail Case,Milk,Blue Meadow,100,16,6,2026-08-14,Refrigerated 38°F
+SAF-006,Lactose-Free Milk Retail Case,Milk,Harvest Moon Dairy,107,17,2,2026-08-15,Refrigerated 34°F
+SAF-007,Half and Half Retail Case,Cream,Pine Hollow Farms,114,18,3,2026-08-16,Refrigerated 36°F
+SAF-008,Heavy Whipping Cream Retail Case,Cream,Riverbend Creamery,121,19,4,2026-08-17,Cold Room A
+SAF-009,Light Cream Retail Case,Cream,FreshRoute Farms,128,20,5,2026-08-18,Chilled dairy case
+SAF-010,Plain Greek Yogurt Retail Case,Yogurt,Meadow Valley,135,21,6,2026-08-19,Refrigerated 38°F
+SAF-011,Vanilla Greek Yogurt Retail Case,Yogurt,North Ridge Dairy,77,22,2,2026-08-20,Refrigerated 34°F
+SAF-012,Strawberry Yogurt Retail Case,Yogurt,Cedar Lane Creamery,84,23,3,2026-08-21,Refrigerated 36°F
+SAF-013,Blueberry Yogurt Retail Case,Yogurt,Blue Meadow,91,12,4,2026-08-22,Cold Room A
+SAF-014,Cottage Cheese Retail Case,Cultured Dairy,Harvest Moon Dairy,98,13,5,2026-08-23,Chilled dairy case
+SAF-015,Sour Cream Retail Case,Cultured Dairy,Pine Hollow Farms,105,14,6,2026-08-24,Refrigerated 38°F
+SAF-016,Cream Cheese Retail Case,Cultured Dairy,Riverbend Creamery,112,15,2,2026-08-25,Refrigerated 34°F
+SAF-017,Salted Butter Retail Case,Butter,FreshRoute Farms,119,16,3,2026-08-26,Refrigerated 36°F
+SAF-018,Unsalted Butter Retail Case,Butter,Meadow Valley,126,17,4,2026-08-27,Cold Room A
+SAF-019,Sharp Cheddar Retail Case,Cheese,North Ridge Dairy,133,18,5,2026-08-10,Chilled dairy case
+SAF-020,Mild Cheddar Retail Case,Cheese,Cedar Lane Creamery,75,19,6,2026-08-11,Refrigerated 38°F
+SAF-021,Mozzarella Retail Case,Cheese,Blue Meadow,82,20,2,2026-08-12,Refrigerated 34°F
+SAF-022,Swiss Cheese Retail Case,Cheese,Harvest Moon Dairy,89,21,3,2026-08-13,Refrigerated 36°F
+SAF-023,Provolone Retail Case,Cheese,Pine Hollow Farms,96,22,4,2026-08-14,Cold Room A
+SAF-024,Monterey Jack Retail Case,Cheese,Riverbend Creamery,103,23,5,2026-08-15,Chilled dairy case
+SAF-025,Colby Jack Retail Case,Cheese,FreshRoute Farms,110,12,6,2026-08-16,Refrigerated 38°F
+SAF-026,Ricotta Cheese Retail Case,Cheese,Meadow Valley,117,13,2,2026-08-17,Refrigerated 34°F
+SAF-027,Feta Crumbles Retail Case,Cheese,North Ridge Dairy,124,14,3,2026-08-18,Refrigerated 36°F
+SAF-028,Parmesan Shreds Retail Case,Cheese,Cedar Lane Creamery,131,15,4,2026-08-19,Cold Room A
+SAF-029,Havarti Slices Retail Case,Cheese,Blue Meadow,73,16,5,2026-08-20,Chilled dairy case
+SAF-030,Gouda Wedges Retail Case,Cheese,Harvest Moon Dairy,80,17,6,2026-08-21,Refrigerated 38°F
+SAF-031,Kefir Plain Retail Case,Drinkable Yogurt,Pine Hollow Farms,87,18,2,2026-08-22,Refrigerated 34°F
+SAF-032,Kefir Strawberry Retail Case,Drinkable Yogurt,Riverbend Creamery,94,19,3,2026-08-23,Refrigerated 36°F
+SAF-033,Buttermilk Retail Case,Milk,FreshRoute Farms,101,20,4,2026-08-24,Cold Room A
+SAF-034,Eggnog Retail Case,Seasonal Dairy,Meadow Valley,108,21,5,2026-08-25,Chilled dairy case
+SAF-035,Vanilla Pudding Retail Case,Dessert,North Ridge Dairy,115,22,6,2026-08-26,Refrigerated 38°F
+SAF-036,Chocolate Pudding Retail Case,Dessert,Cedar Lane Creamery,122,23,2,2026-08-27,Refrigerated 34°F
+SAF-037,Rice Pudding Retail Case,Dessert,Blue Meadow,129,12,3,2026-08-10,Refrigerated 36°F
+SAF-038,Whipped Topping Retail Case,Dessert,Harvest Moon Dairy,136,13,4,2026-08-11,Cold Room A
+SAF-039,Mascarpone Retail Case,Specialty Cheese,Pine Hollow Farms,78,14,5,2026-08-12,Chilled dairy case
+SAF-040,Queso Fresco Retail Case,Specialty Cheese,Riverbend Creamery,85,15,6,2026-08-13,Refrigerated 38°F
+SAF-041,Whole Milk Family Pack,Milk,FreshRoute Farms,92,16,2,2026-08-14,Refrigerated 34°F
+SAF-042,2% Milk Family Pack,Milk,Meadow Valley,99,17,3,2026-08-15,Refrigerated 36°F
+SAF-043,Skim Milk Family Pack,Milk,North Ridge Dairy,106,18,4,2026-08-16,Cold Room A
+SAF-044,Chocolate Milk Family Pack,Milk,Cedar Lane Creamery,113,19,5,2026-08-17,Chilled dairy case
+SAF-045,Organic Whole Milk Family Pack,Milk,Blue Meadow,120,20,6,2026-08-18,Refrigerated 38°F
+SAF-046,Lactose-Free Milk Family Pack,Milk,Harvest Moon Dairy,127,21,2,2026-08-19,Refrigerated 34°F
+SAF-047,Half and Half Family Pack,Cream,Pine Hollow Farms,134,22,3,2026-08-20,Refrigerated 36°F
+SAF-048,Heavy Whipping Cream Family Pack,Cream,Riverbend Creamery,76,23,4,2026-08-21,Cold Room A
+SAF-049,Light Cream Family Pack,Cream,FreshRoute Farms,83,12,5,2026-08-22,Chilled dairy case
+SAF-050,Plain Greek Yogurt Family Pack,Yogurt,Meadow Valley,90,13,6,2026-08-23,Refrigerated 38°F
+SAF-051,Vanilla Greek Yogurt Family Pack,Yogurt,North Ridge Dairy,97,14,2,2026-08-24,Refrigerated 34°F
+SAF-052,Strawberry Yogurt Family Pack,Yogurt,Cedar Lane Creamery,104,15,3,2026-08-25,Refrigerated 36°F
+SAF-053,Blueberry Yogurt Family Pack,Yogurt,Blue Meadow,111,16,4,2026-08-26,Cold Room A
+SAF-054,Cottage Cheese Family Pack,Cultured Dairy,Harvest Moon Dairy,118,17,5,2026-08-27,Chilled dairy case
+SAF-055,Sour Cream Family Pack,Cultured Dairy,Pine Hollow Farms,125,18,6,2026-08-10,Refrigerated 38°F
+SAF-056,Cream Cheese Family Pack,Cultured Dairy,Riverbend Creamery,132,19,2,2026-08-11,Refrigerated 34°F
+SAF-057,Salted Butter Family Pack,Butter,FreshRoute Farms,74,20,3,2026-08-12,Refrigerated 36°F
+SAF-058,Unsalted Butter Family Pack,Butter,Meadow Valley,81,21,4,2026-08-13,Cold Room A
+SAF-059,Sharp Cheddar Family Pack,Cheese,North Ridge Dairy,88,22,5,2026-08-14,Chilled dairy case
+SAF-060,Mild Cheddar Family Pack,Cheese,Cedar Lane Creamery,95,23,6,2026-08-15,Refrigerated 38°F
+SAF-061,Mozzarella Family Pack,Cheese,Blue Meadow,102,12,2,2026-08-16,Refrigerated 34°F
+SAF-062,Swiss Cheese Family Pack,Cheese,Harvest Moon Dairy,109,13,3,2026-08-17,Refrigerated 36°F
+SAF-063,Provolone Family Pack,Cheese,Pine Hollow Farms,116,14,4,2026-08-18,Cold Room A
+SAF-064,Monterey Jack Family Pack,Cheese,Riverbend Creamery,123,15,5,2026-08-19,Chilled dairy case
+SAF-065,Colby Jack Family Pack,Cheese,FreshRoute Farms,130,16,6,2026-08-20,Refrigerated 38°F
+SAF-066,Ricotta Cheese Family Pack,Cheese,Meadow Valley,72,17,2,2026-08-21,Refrigerated 34°F
+SAF-067,Feta Crumbles Family Pack,Cheese,North Ridge Dairy,79,18,3,2026-08-22,Refrigerated 36°F
+SAF-068,Parmesan Shreds Family Pack,Cheese,Cedar Lane Creamery,86,19,4,2026-08-23,Cold Room A
+SAF-069,Havarti Slices Family Pack,Cheese,Blue Meadow,93,20,5,2026-08-24,Chilled dairy case
+SAF-070,Gouda Wedges Family Pack,Cheese,Harvest Moon Dairy,100,21,6,2026-08-25,Refrigerated 38°F
+SAF-071,Kefir Plain Family Pack,Drinkable Yogurt,Pine Hollow Farms,107,22,2,2026-08-26,Refrigerated 34°F
+SAF-072,Kefir Strawberry Family Pack,Drinkable Yogurt,Riverbend Creamery,114,23,3,2026-08-27,Refrigerated 36°F
+SAF-073,Buttermilk Family Pack,Milk,FreshRoute Farms,121,12,4,2026-08-10,Cold Room A
+SAF-074,Eggnog Family Pack,Seasonal Dairy,Meadow Valley,128,13,5,2026-08-11,Chilled dairy case
+SAF-075,Vanilla Pudding Family Pack,Dessert,North Ridge Dairy,135,14,6,2026-08-12,Refrigerated 38°F
+SAF-076,Chocolate Pudding Family Pack,Dessert,Cedar Lane Creamery,77,15,2,2026-08-13,Refrigerated 34°F
+SAF-077,Rice Pudding Family Pack,Dessert,Blue Meadow,84,16,3,2026-08-14,Refrigerated 36°F
+SAF-078,Whipped Topping Family Pack,Dessert,Harvest Moon Dairy,91,17,4,2026-08-15,Cold Room A
+SAF-079,Mascarpone Family Pack,Specialty Cheese,Pine Hollow Farms,98,18,5,2026-08-16,Chilled dairy case
+SAF-080,Queso Fresco Family Pack,Specialty Cheese,Riverbend Creamery,105,19,6,2026-08-17,Refrigerated 38°F

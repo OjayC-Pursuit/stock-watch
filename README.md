@@ -1,108 +1,81 @@
 # StockWatch
 
-StockWatch is an inventory attention dashboard designed to help Inventory Coordinators quickly identify which products need action.
+> **[Open the live StockWatch MVP](https://ojayc-pursuit.github.io/stock-watch/)**
 
-Instead of manually reviewing every row in a spreadsheet, the user can open StockWatch and immediately see products that are low in stock, expiring soon, or urgent.
+StockWatch is an import-first inventory attention dashboard for an Inventory Coordinator managing roughly 80 refrigerated products. Instead of manually comparing spreadsheet rows, the coordinator loads an inventory CSV and immediately sees what needs attention.
 
-## Problem Statement
+![StockWatch V2 CSV-loader dashboard with an imported 80-product inventory](docs/screenshots/stockwatch-v2-current-csv-loader-desktop.png)
 
-An Inventory Coordinator struggles to quickly identify which products need attention each day because the current spreadsheet does not automatically compare stock quantities, reorder thresholds, sales rates, and expiration dates, which means products may run out or expire before action is taken.
-
-## Solution
-
-StockWatch reviews inventory information and organizes products into clear alert categories.
-
-The dashboard helps the Inventory Coordinator answer one important question:
-
-What products need my attention today?
-
-StockWatch provides information and recommended actions, but the MVP does not automatically place orders, contact suppliers, or generate reports.
-
-## Core MVP Features
-
-- View a summary of inventory alerts
-- Identify low-stock products
-- Identify products expiring soon
-- Highlight urgent products
-- Filter products by alert category
-- View individual product details
-- Display recommended actions
-- Mark products as reviewed
-
-## MVP User Flow
-
-Open Inventory Dashboard
-→ View Today’s Inventory Summary
-→ Select an Alert Category
-→ Review Flagged Products
-→ Open a Product for Details
-→ Review the Recommended Action
-→ Mark the Product as Reviewed
-
-After a product is marked as reviewed, the StockWatch MVP flow ends. The Inventory Coordinator completes actions such as placing an order through the company’s existing process.
-
-## MVP Scope
-
-Included:
-
-- Sample inventory data
-- Inventory priority calculations
-- Alert categories
-- Product filtering
-- Product details
-- Display-only recommendations
-- Reviewed status
-
-Not included:
-
-- Automatic supplier orders
-- Supplier emails
-- Report generation
-- User accounts
-- Multiple warehouses
-- Live database connections
-- Advanced sales forecasting
-
-## Tech Stack
-
-- HTML
-- CSS
-- JavaScript
-- Git
-- GitHub
-
-## Project Status
-
-The first StockWatch inventory-prioritization dashboard is implemented. It evaluates the eight-product sample inventory and presents the approved Urgent, Low Stock, Expiring Soon, and Safe priorities.
-
-## Design evolution
-
-The current interface is **V2 · Cold-Chain Signal Board**. The earlier Field Desk and Cold-Chain studies are retained in `docs/screenshots/` as explorations, while the numbered history tracks released dashboard versions.
-
-| Version | Desktop | Mobile |
-| --- | --- | --- |
-| V1 · Original daily briefing | ![V1 desktop](docs/screenshots/stockwatch-v1-desktop.png) | ![V1 mobile](docs/screenshots/stockwatch-v1-mobile.png) |
-| **V2 · Cold-Chain Signal Board (current)** | ![V2 current desktop](docs/screenshots/stockwatch-v2-desktop.png) | ![V2 current mobile](docs/screenshots/stockwatch-v2-mobile.png) |
-
-## V2.1 CSV inventory loader
-
-StockWatch V2.1 opens with an empty inventory board. Choose a local CSV file and StockWatch keeps it only for the current browser session:
+## What StockWatch does
 
 ```text
-CSV file selected
-→ parsed and validated
-→ evaluated
+CSV selected
+→ file parsed and validated
+→ products evaluated
+→ inventory prioritized
 → dashboard updated
-→ reset returns to empty state
 ```
 
-The import accepts these required columns: `productName`, `category`, `brand`, `quantityOnHand`, `reorderThreshold`, `salesRatePerDay`, and `expirationDate`. It also supports optional `id` and `storageCondition` columns. Imported inventory is temporary: refreshing the page or clearing inventory returns StockWatch to its empty state.
+StockWatch groups the imported inventory into Urgent, Low Stock, Expiring Soon, and Safe. Each product card explains why it was prioritized and shows a display-only recommended action. The MVP does not place orders, contact suppliers, generate reports, or connect to a live inventory system.
 
-Demo CSV files in `data/demo-csv/` demonstrate the importer:
+## Current MVP flow
 
-- `balanced-inventory.csv` — one Low Stock, one Expiring Soon, and four Safe products.
-- `high-urgency-inventory.csv` — four Urgent products plus one Low Stock and one Expiring Soon product.
-- `expiration-heavy-inventory.csv` — five healthy-stock products expiring soon and one Safe product.
-- `all-safe-inventory.csv` — six Safe products.
-- `invalid-inventory.csv` — validation errors that leave the existing dashboard unchanged.
+1. Open StockWatch.
+2. Select a CSV inventory file.
+3. StockWatch validates the entire file.
+4. If valid, the imported products replace the current in-memory inventory.
+5. The dashboard displays Urgent, Low Stock, Expiring Soon, and Safe results.
+6. Review each product’s reasons and recommended action.
+7. Replace the CSV or clear inventory when needed.
+8. Refreshing the page clears imported data because StockWatch has no persistence.
+
+## CSV import
+
+StockWatch accepts a local `.csv` file. Headers can appear in any order, but supported names are case-sensitive after trimming whitespace.
+
+| Column | Required? | Rule |
+| --- | --- | --- |
+| `productName` | Yes | Nonblank text |
+| `category` | Yes | Nonblank text |
+| `brand` | Yes | Nonblank text |
+| `quantityOnHand` | Yes | Finite number greater than or equal to zero |
+| `reorderThreshold` | Yes | Finite number greater than or equal to zero |
+| `salesRatePerDay` | Yes | Finite number greater than or equal to zero |
+| `expirationDate` | Yes | A real date in exact `YYYY-MM-DD` format |
+| `id` | No | Nonblank supplied IDs must be unique; blank or missing IDs receive a temporary in-memory ID |
+| `storageCondition` | No | Blank or missing values become `Not specified` |
+
+Import rules:
+
+- Files must be `.csv` and no larger than 1 MB.
+- A file can contain at most 250 product rows.
+- Validation is all-or-nothing: one invalid required value rejects the complete import.
+- Imported data exists only for the current browser session.
+- A failed replacement import preserves the active dashboard and active filename.
+- Clear inventory returns StockWatch to its empty import state; it does not restore sample data.
+
+## Demo CSV files
+
+The 80-product presentation files are in [data/demo-csv](data/demo-csv/). Their results are produced by the evaluator, not hardcoded into the dashboard.
+
+| File | Scenario | Products | Expected status totals | Expected headline |
+| --- | --- | ---: | --- | --- |
+| `balanced-inventory.csv` | A mixed but manageable day | 80 | 4 Urgent · 12 Low Stock · 16 Expiring Soon · 48 Safe | 4 cases are at the red line. |
+| `high-urgency-inventory.csv` | Immediate operational risk | 80 | 45 Urgent · 10 Low Stock · 10 Expiring Soon · 15 Safe | 45 cases are at the red line. |
+| `expiration-heavy-inventory.csv` | Shelf-life pressure with healthy stock | 80 | 0 Urgent · 0 Low Stock · 60 Expiring Soon · 20 Safe | 60 products need attention today. |
+| `all-safe-inventory.csv` | Healthy inventory | 80 | 0 Urgent · 0 Low Stock · 0 Expiring Soon · 80 Safe | Inventory is clear for today. |
+| `invalid-inventory.csv` | Validation and failed-replacement demonstration | 80 | No import | The active dashboard stays unchanged. |
+
+The invalid file deliberately includes a negative quantity, invalid date format, blank brand, nonnumeric sales rate, and duplicate supplied ID. StockWatch reports the capped row-and-column error list instead of rendering a partial inventory.
+
+## Technical summary
+
+- Plain HTML, CSS, and JavaScript
+- Browser File APIs for local CSV reading
+- No backend, database, authentication, or persistence
+- Automated Node tests and browser tests
+
+## Design history
+
+The current product image above is StockWatch V2 with the CSV loader. Earlier [V1 and visual exploration screenshots](docs/screenshots/) are retained as design history only; they are not separate current MVP releases.
 

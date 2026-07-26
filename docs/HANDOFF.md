@@ -2,57 +2,44 @@
 
 ## Current Project State
 
-StockWatch V2 is the committed current dashboard on `main`. StockWatch V2.1 is implemented in the uncommitted working tree on `feature/csv-inventory-loader` and is awaiting final user review. The approved temporary preview remains untracked under `.superpowers/`.
+StockWatch V2 with CSV loading is committed on `main`. The 80-product demo CSV refresh is complete in the uncommitted working tree on `feature/80-product-demo-csvs` and is ready for user review. No application behavior was changed.
 
 ## What Already Works
 
-- The app loads and prioritizes all eight products from `data/sample-inventory.json`.
-- Expected totals remain 4 Urgent, 1 Low Stock, 2 Expiring Soon, and 1 Safe.
-- The fixed July 22, 2026 demo date, sorting, reasons, display-only recommendations, and business rules are unchanged.
-- The top-left product lockup reads StockWatch; FreshRoute is the large route/leaf identity inside the hero.
-- Urgent work appears immediately after the red-line hero on desktop and mobile.
-- Status meaning uses labels, icons, text, structure, and accessible colors rather than color alone.
-- Fresh verification at 1280px desktop, 390px mobile, and 320px narrow widths found all eight cards with no horizontal overflow.
-- The README preserves V1 and the current V2 in a concise design-evolution gallery.
-- The saved final V2 desktop and mobile screenshots match the live implementation.
-- The dashboard is no longer a broad live region; the existing error alert remains available for load failures.
-- All 33 automated tests pass, including the browser importer test; fresh browser verification found no console warnings or errors.
-- V2.1 opens empty with zero summary counts and no product cards until a CSV is imported.
-- The browser-only importer parses quoted CSV, validates the approved schema, evaluates valid products through the existing evaluator, preserves active results after a failed replacement, and resets to empty.
-- The Receiving Manifest Dock implements EMPTY, CHECKING, ACTIVE, HOLD, and reset-confirmation presentation with the approved responsive and accessibility rules.
-- Five CSV scenarios under `data/demo-csv/` produce their approved totals through the evaluator.
+- The browser-only CSV loader opens empty, validates a full CSV before replacing in-memory inventory, preserves the active dashboard after a failed replacement, and resets to empty.
+- The evaluator retains its fixed July 22, 2026 demo date, prioritization rules, sorting, reasons, and recommended actions.
+- All four valid demo files now have 80 products with the approved nine-column header schema and unique supplied IDs.
+- Browser verification confirmed all 80 cards render for every valid demo, the status totals and grammar-aware headlines are correct, the status order is correct, and the 80-card list does not horizontally overflow at 1280px, 390px, or 320px.
+- The invalid demo file has 80 presentation-like rows and five deliberate validation problems. It displays the capped row-and-column error list and leaves the previously active dashboard unchanged.
+- The full automated suite passes: 33 tests, including the expanded browser importer test.
 
 ## Most Recent Completed Work
 
-- Committed StockWatch V2 Cold-Chain Signal Board on `main`.
-- Completed the V2.1 functional CSV-loader design in `docs/superpowers/specs/2026-07-24-csv-inventory-loader-design.md`.
-- Completed the approved V2.1 Receiving Manifest Dock visual design in `docs/superpowers/specs/2026-07-26-csv-inventory-loader-visual-design.md`.
-- Implemented the approved V2.1 CSV inventory loader, its demo scenarios, Node tests, and Playwright browser test. Final review and a commit decision remain.
+- Created `feature/80-product-demo-csvs` from `main`.
+- Replaced the five presentation CSV fixtures with 80-row dairy and refrigerated inventory scenarios.
+- Updated Node and browser coverage to assert every valid demo imports 80 products, produces exact totals and headlines, and preserves the active dashboard after the invalid import.
+- Rewrote README around the current import-first StockWatch V2 MVP, verified the GitHub Pages link, and added a desktop screenshot of the imported 80-product balanced demo.
+- Performed manual browser checks of all valid files, the invalid replacement flow, long-list sorting, responsive overflow, and browser-console output.
 
 ## Next Exact Task
 
-Review the completed V2.1 working tree, including automated tests, browser verification, accessibility, and final intended commit contents. Do not commit until the user explicitly approves.
+Review the completed 80-product demo CSV working tree, including the CSV fixtures, tests, README, and verification results. Do not commit until the user explicitly approves.
 
 ## Settled Decisions
 
-- V2 Cold-Chain Signal Board is the current visual direction.
-- The primary headline is “Four cases are at the red line.”
-- StockWatch owns the top-left product position.
-- FreshRoute name and route/leaf icon are large and prominent in the hero.
-- The lined workspace background remains.
-- The earlier diagonal hero stripes and vertical split layout are removed.
-- Product scope, data source, calculations, totals, sorting, and recommendations remain unchanged in V2.
-- V2.1 implements the approved functional CSV-loader and Receiving Manifest Dock designs without a backend, persistence, package, or CSV library.
-- V2.1 is import-first: it opens empty, validates a complete CSV before replacing in-memory inventory, and resets to empty rather than restoring sample data.
-- The Receiving Manifest Dock sits below the main header, is expanded while empty, and becomes a compact active-file strip after a valid import.
-- Imported data stays in memory for the current browser session and never restores the sample inventory after reset.
-- Temporary preview files remain untracked under `.superpowers/`.
-- No new dependencies, features, commit, push, or deployment are authorized.
+- StockWatch remains a small, plain HTML, CSS, and JavaScript class MVP with no backend, persistence, framework, package, or CSV library.
+- Imported inventory remains temporary and in memory for the current browser session.
+- Valid demo fixtures use exactly 80 products plus one header row with this schema: `id`, `productName`, `category`, `brand`, `quantityOnHand`, `reorderThreshold`, `salesRatePerDay`, `expirationDate`, and `storageCondition`.
+- `balanced-inventory.csv`: 4 Urgent, 12 Low Stock, 16 Expiring Soon, 48 Safe; headline: “4 cases are at the red line.”
+- `high-urgency-inventory.csv`: 45 Urgent, 10 Low Stock, 10 Expiring Soon, 15 Safe; headline: “45 cases are at the red line.”
+- `expiration-heavy-inventory.csv`: 0 Urgent, 0 Low Stock, 60 Expiring Soon, 20 Safe; headline: “60 products need attention today.”
+- `all-safe-inventory.csv`: 0 Urgent, 0 Low Stock, 0 Expiring Soon, 80 Safe; headline: “Inventory is clear for today.”
+- `invalid-inventory.csv` deliberately has five row-and-column errors: negative quantity, invalid date format, blank brand, nonnumeric sales rate, and duplicate supplied ID.
+- Temporary `.superpowers/` files remain ignored and outside the intended commit.
 
 ## Unresolved Decisions or Blockers
 
-- No implementation blockers are known; the next gate is final user review before a commit decision.
-- Reviewed-state persistence remains outside this feature slice.
+- No implementation blocker is known. The next gate is user review and a commit decision for this feature branch.
 
 ## Verification Commands
 
@@ -64,12 +51,9 @@ git diff --check
 git status --short --branch
 ```
 
-Serve the repository and verify:
+Manual browser checks:
 
-- all eight products render;
-- counts are 4 / 1 / 2 / 1;
-- Whole Milk leads the urgent queue;
-- desktop, 390px mobile, and 320px layouts do not overflow;
-- status labels and headings remain understandable without color;
-- loading and error states preserve the board structure and recovery guidance; and
-- the browser console has no errors.
+- import each valid demo CSV and confirm 80 cards, exact totals, and its expected headline;
+- load `invalid-inventory.csv` after a valid import and confirm the active file and 80 cards remain;
+- verify the long inventory list at 1280px, 390px, and 320px with no horizontal overflow; and
+- check the browser console for errors or warnings.
