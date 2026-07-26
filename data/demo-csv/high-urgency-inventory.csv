@@ -1,0 +1,7 @@
+productName,category,brand,quantityOnHand,reorderThreshold,salesRatePerDay,expirationDate,id,storageCondition
+Fast Whole Milk,Milk,Hearth Valley,10,10,6,2026-08-20,HIGH-001,Refrigerated
+Near-Expiry Cream,Cream,FreshRoute Reserve,5,10,1,2026-07-24,HIGH-002,Refrigerated
+Expired Yogurt,Yogurt,Northfield Farms,100,10,1,2026-07-21,HIGH-003,Refrigerated
+Fast Butter,Butter,Meadow Gold,4,3,2,2026-08-15,HIGH-004,Refrigerated
+Low Cheddar,Cheese,Cedar Creek,10,12,1,2026-08-20,HIGH-005,Refrigerated
+Soon Cottage Cheese,Cottage Cheese,Northfield Farms,50,10,1,2026-07-27,HIGH-006,Refrigerated

@@ -1,0 +1,3 @@
+productName,category,brand,quantityOnHand,reorderThreshold,salesRatePerDay,expirationDate,id,storageCondition
+Broken Milk,Milk,Hearth Valley,-1,10,2,2026-08-20,INVALID-001,Refrigerated
+Broken Yogurt,Yogurt,Northfield Farms,10,10,2,07/27/2026,INVALID-002,Refrigerated

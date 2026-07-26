@@ -1,0 +1,7 @@
+productName,category,brand,quantityOnHand,reorderThreshold,salesRatePerDay,expirationDate,id,storageCondition
+Heavy Cream,Cream,FreshRoute Reserve,10,12,3,2026-08-10,BAL-001,Refrigerated
+Plain Greek Yogurt,Yogurt,Northfield Farms,50,20,2,2026-07-27,BAL-002,Refrigerated
+Whole Milk,Milk,Hearth Valley,64,24,8,2026-08-03,BAL-003,Refrigerated
+Salted Butter,Butter,Meadow Gold,42,16,3,2026-09-10,BAL-004,Refrigerated
+Sharp Cheddar Block,Cheese,Cedar Creek,36,12,2,2026-09-02,BAL-005,Refrigerated
+Cottage Cheese,Cottage Cheese,Northfield Farms,31,10,2,2026-08-15,BAL-006,Refrigerated

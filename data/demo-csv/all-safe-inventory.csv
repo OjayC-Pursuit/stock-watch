@@ -1,0 +1,7 @@
+productName,category,brand,quantityOnHand,reorderThreshold,salesRatePerDay,expirationDate,id,storageCondition
+Whole Milk,Milk,Hearth Valley,100,10,2,2026-08-20,SAFE-001,Refrigerated
+2 Percent Milk,Milk,Hearth Valley,90,10,2,2026-08-21,SAFE-002,Refrigerated
+Greek Yogurt,Yogurt,Northfield Farms,80,10,2,2026-08-22,SAFE-003,Refrigerated
+Heavy Cream,Cream,FreshRoute Reserve,70,10,2,2026-08-23,SAFE-004,Refrigerated
+Salted Butter,Butter,Meadow Gold,60,10,2,2026-08-24,SAFE-005,Refrigerated
+Sharp Cheddar,Cheese,Cedar Creek,50,10,2,2026-08-25,SAFE-006,Refrigerated

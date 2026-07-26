@@ -24,6 +24,15 @@ const STATUS_DETAILS = {
 const STATUS_GROUPS = ['Urgent', 'Low Stock', 'Expiring Soon', 'Safe'];
 const NUMBER_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five'];
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 function formatStockout(days) {
   return days === null ? 'Not projected' : `${days.toFixed(1)} days`;
 }
@@ -90,12 +99,12 @@ function productCard(product) {
   return `
     <article class="product-card status-${details.className}">
       <div class="case-topline">
-        <p class="case-id">${product.id} · ${product.storageCondition}</p>
+        <p class="case-id">${escapeHtml(product.id)} · ${escapeHtml(product.storageCondition)}</p>
         ${timing}
       </div>
 
-      <h3>${product.productName}</h3>
-      <p class="product-category">${product.category} · ${product.brand}</p>
+      <h3>${escapeHtml(product.productName)}</h3>
+      <p class="product-category">${escapeHtml(product.category)} · ${escapeHtml(product.brand)}</p>
 
       <dl class="inventory-facts">
         <div class="critical-fact">
@@ -275,7 +284,7 @@ export function renderError(container) {
   `;
 }
 
-export function renderDashboard(container, products, counts) {
+function renderEvaluatedDashboard(container, products, counts, headline = urgentHeadline(counts.Urgent)) {
   const urgentProducts = products.filter(
     (product) => product.primaryStatus === 'Urgent',
   );
@@ -288,7 +297,7 @@ export function renderDashboard(container, products, counts) {
     <section class="board-hero" aria-labelledby="priority-headline">
       <div class="hero-message">
         <p class="eyebrow">Morning inventory signal</p>
-        <h1 id="priority-headline">${urgentHeadline(counts.Urgent)}</h1>
+        <h1 id="priority-headline">${headline}</h1>
         ${heroLead(urgentProducts[0])}
       </div>
       ${freshRouteHeroBrand()}
@@ -302,4 +311,59 @@ export function renderDashboard(container, products, counts) {
         .join('')}
     </div>
   `;
+}
+
+export function createEmptyCounts() {
+  return { Urgent: 0, 'Low Stock': 0, 'Expiring Soon': 0, Safe: 0 };
+}
+
+export function getImportedHeadline(counts) {
+  if (counts.Urgent > 0) {
+    return `${counts.Urgent} case${counts.Urgent === 1 ? ' is' : 's are'} at the red line.`;
+  }
+  const attentionCount = counts['Low Stock'] + counts['Expiring Soon'];
+  if (attentionCount > 0) {
+    return `${attentionCount} product${attentionCount === 1 ? ' needs' : 's need'} attention today.`;
+  }
+  return 'Inventory is clear for today.';
+}
+
+function renderImportStatus(viewModel) {
+  return `<p class="import-status" aria-live="polite" aria-atomic="true">${escapeHtml(viewModel.statusMessage || '')}</p>`;
+}
+
+function renderManifestDock(viewModel) {
+  const hasActiveInventory = viewModel.activeFileName !== null;
+  const checking = viewModel.phase === 'checking';
+  const holding = viewModel.phase === 'hold';
+  const active = viewModel.phase === 'active';
+  const seal = holding ? 'HOLD' : checking ? 'CHECKING' : active ? 'ACTIVE' : 'EMPTY';
+  const actions = hasActiveInventory
+    ? `<div class="manifest-actions"><label class="action-button secondary" for="inventory-file"${checking ? ' aria-disabled="true"' : ''}>Replace CSV</label><button type="button" class="action-button tertiary" data-import-action="clear"${checking ? ' disabled' : ''}>Clear inventory</button></div>`
+    : `<div class="manifest-actions"><label class="action-button primary" for="inventory-file">Choose CSV file</label></div>`;
+  const fileInput = `<input id="inventory-file" class="visually-hidden" type="file" accept=".csv,text/csv"${checking ? ' disabled' : ''}>`;
+  const activeIdentity = hasActiveInventory
+    ? `<div class="active-file"><span class="file-label">ACTIVE FILE</span><div class="filename-line"><span class="filename">${escapeHtml(viewModel.activeFileName)}</span><span class="product-count">${viewModel.evaluatedProducts.length} products</span></div></div>`
+    : `<div><h1 class="manifest-title" id="manifest-title">Import a CSV inventory file to begin.</h1><p class="manifest-copy">Choose the inventory export you want StockWatch to evaluate.</p></div>`;
+  const errors = holding && viewModel.errors.length > 0
+    ? `<section class="hold-panel" aria-labelledby="import-error-summary" tabindex="-1"><div class="hold-heading"><span class="state-seal is-hold" aria-hidden="true">! HOLD</span><div><span class="file-label">ATTEMPTED FILE</span><span class="filename">${escapeHtml(viewModel.attemptedFileName || '')}</span></div></div><h2 id="import-error-summary">Review the flagged rows.</h2><ul class="error-list">${viewModel.errors.map((error) => `<li><span class="error-meta">Row ${escapeHtml(error.row)} · ${escapeHtml(error.column)}</span><p class="error-message">${escapeHtml(error.explanation)}</p></li>`).join('')}</ul>${viewModel.additionalErrorCount ? `<p class="additional-errors">+ ${viewModel.additionalErrorCount} additional issues</p>` : ''}</section>`
+    : '';
+  const dockLabel = hasActiveInventory ? 'aria-label="Receiving manifest"' : 'aria-labelledby="manifest-title"';
+  return `<section class="manifest-dock${hasActiveInventory ? ' is-compact' : ''}${checking ? ' is-checking' : ''}" ${dockLabel}><div class="manifest-header"><p class="manifest-kicker">RECEIVING MANIFEST · CSV</p><span class="state-seal ${active ? 'is-active' : ''}${holding ? ' is-hold' : ''}"><span aria-hidden="true">${active ? '✓' : holding ? '!' : checking ? '⋯' : '○'}</span>${seal}</span></div><div class="${hasActiveInventory ? 'active-layout' : 'manifest-empty-layout'}">${activeIdentity}<div>${actions}${hasActiveInventory ? '' : '<p class="manifest-helper">CSV only · Up to 1 MB · Maximum 250 products</p>'}</div></div>${renderImportStatus(viewModel)}${fileInput}${errors}</section>`;
+}
+
+export function renderDashboard(container, productsOrViewModel, counts) {
+  if (Array.isArray(productsOrViewModel)) {
+    renderEvaluatedDashboard(container, productsOrViewModel, counts);
+    return;
+  }
+  const viewModel = productsOrViewModel;
+  const dock = renderManifestDock(viewModel);
+  if (viewModel.evaluatedProducts.length === 0) {
+    container.innerHTML = `${dock}<section class="priority-rail" aria-label="Inventory signal summary">${STATUS_GROUPS.map((status) => summaryRailItem(status, viewModel.counts[status])).join('')}</section>`;
+    return;
+  }
+  const resultsContainer = { innerHTML: '' };
+  renderEvaluatedDashboard(resultsContainer, viewModel.evaluatedProducts, viewModel.counts, getImportedHeadline(viewModel.counts));
+  container.innerHTML = `${dock}${resultsContainer.innerHTML}`;
 }

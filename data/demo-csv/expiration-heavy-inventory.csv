@@ -1,0 +1,7 @@
+productName,category,brand,quantityOnHand,reorderThreshold,salesRatePerDay,expirationDate,id,storageCondition
+Milk One,Milk,Hearth Valley,100,10,2,2026-07-24,EXP-001,Refrigerated
+Milk Two,Milk,Hearth Valley,100,10,2,2026-07-25,EXP-002,Refrigerated
+Yogurt One,Yogurt,Northfield Farms,100,10,2,2026-07-26,EXP-003,Refrigerated
+Cream One,Cream,FreshRoute Reserve,100,10,2,2026-07-27,EXP-004,Refrigerated
+Butter One,Butter,Meadow Gold,100,10,2,2026-07-29,EXP-005,Refrigerated
+Cheddar Safe,Cheese,Cedar Creek,100,10,2,2026-08-20,EXP-006,Refrigerated

@@ -84,5 +84,25 @@ The current interface is **V2 · Cold-Chain Signal Board**. The earlier Field De
 | V1 · Original daily briefing | ![V1 desktop](docs/screenshots/stockwatch-v1-desktop.png) | ![V1 mobile](docs/screenshots/stockwatch-v1-mobile.png) |
 | **V2 · Cold-Chain Signal Board (current)** | ![V2 current desktop](docs/screenshots/stockwatch-v2-desktop.png) | ![V2 current mobile](docs/screenshots/stockwatch-v2-mobile.png) |
 
-The planned **V2.1** update will add a functional CSV inventory loader in the browser while preserving the existing dashboard and prioritization behavior.
+## V2.1 CSV inventory loader
+
+StockWatch V2.1 opens with an empty inventory board. Choose a local CSV file and StockWatch keeps it only for the current browser session:
+
+```text
+CSV file selected
+→ parsed and validated
+→ evaluated
+→ dashboard updated
+→ reset returns to empty state
+```
+
+The import accepts these required columns: `productName`, `category`, `brand`, `quantityOnHand`, `reorderThreshold`, `salesRatePerDay`, and `expirationDate`. It also supports optional `id` and `storageCondition` columns. Imported inventory is temporary: refreshing the page or clearing inventory returns StockWatch to its empty state.
+
+Demo CSV files in `data/demo-csv/` demonstrate the importer:
+
+- `balanced-inventory.csv` — one Low Stock, one Expiring Soon, and four Safe products.
+- `high-urgency-inventory.csv` — four Urgent products plus one Low Stock and one Expiring Soon product.
+- `expiration-heavy-inventory.csv` — five healthy-stock products expiring soon and one Safe product.
+- `all-safe-inventory.csv` — six Safe products.
+- `invalid-inventory.csv` — validation errors that leave the existing dashboard unchanged.
 

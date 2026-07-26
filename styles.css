@@ -901,3 +901,61 @@ h3 {
     animation: none;
   }
 }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.manifest-dock {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 24px 28px;
+  overflow: hidden;
+  border: 1px solid var(--chiller-blue);
+  border-top: 5px solid var(--freshroute-green);
+  background: rgb(251 252 248 / 0.94);
+}
+
+.manifest-dock.is-compact { padding: 14px 18px; }
+.manifest-dock.is-checking::before {
+  position: absolute; top: 0; left: -28%; width: 28%; height: 2px;
+  background: var(--freshroute-leaf); content: ''; animation: manifest-scan 1.15s ease-in-out infinite;
+}
+.manifest-header, .filename-line, .manifest-actions { display: flex; align-items: center; }
+.manifest-header { justify-content: space-between; gap: 16px; }
+.manifest-kicker, .file-label, .product-count, .state-seal, .manifest-helper, .error-meta {
+  font-family: "Cascadia Mono", Consolas, monospace;
+}
+.manifest-kicker { margin: 0; color: var(--steel); font-size: .65rem; font-weight: 750; letter-spacing: .08em; }
+.state-seal { display: inline-flex; min-height: 32px; align-items: center; gap: 7px; padding: 6px 9px; color: var(--chiller-blue); border: 1px solid currentColor; font-size: .67rem; font-weight: 800; letter-spacing: .06em; }
+.state-seal.is-active { color: var(--freshroute-green); background: var(--safe-soft); }
+.state-seal.is-hold { color: var(--signal-red-dark); background: var(--signal-red-soft); }
+.manifest-empty-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, .6fr); gap: 28px; align-items: end; margin-top: 28px; }
+.active-layout { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 30px; row-gap: 18px; align-items: center; margin-top: 11px; }
+.manifest-title { max-width: 18ch; margin: 0; font-size: clamp(2.25rem, 4.3vw, 4rem); line-height: .94; }
+.manifest-copy { max-width: 48ch; margin: 13px 0 0; color: var(--steel); font-size: .84rem; line-height: 1.5; }
+.manifest-actions { gap: 10px; justify-content: end; }
+.manifest-empty-layout .manifest-actions { display: grid; justify-content: stretch; }
+.manifest-helper { margin: 9px 0 0; color: var(--steel); font-size: .64rem; line-height: 1.45; }
+.action-button { display: inline-grid; min-height: 44px; align-items: center; padding: 10px 15px; border: 1px solid transparent; border-radius: 0; font: 750 .78rem/1 "Bahnschrift", "Segoe UI", sans-serif; cursor: pointer; }
+.action-button.primary { color: var(--milk-white); border-color: var(--freshroute-green); background: var(--freshroute-green); }
+.action-button.secondary { color: var(--deep-blue); border-color: var(--chiller-blue); background: var(--milk-white); }
+.action-button.tertiary { color: var(--deep-blue); background: transparent; }
+.action-button:focus-visible { outline: 3px solid var(--deep-blue); outline-offset: 3px; box-shadow: 0 0 0 5px var(--milk-white); }
+.action-button:disabled, .action-button[aria-disabled="true"] { cursor: wait; opacity: .58; }
+.active-file { min-width: 0; }.file-label { display: block; margin-bottom: 4px; color: var(--steel); font-size: .58rem; font-weight: 750; letter-spacing: .07em; }
+.filename-line { min-width: 0; gap: 9px; flex-wrap: wrap; }.filename { min-width: 0; overflow-wrap: anywhere; font: 750 1rem/1.25 "Cascadia Mono", Consolas, monospace; }
+.product-count { padding: 4px 7px; color: var(--freshroute-green); border: 1px solid currentColor; background: var(--safe-soft); font-size: .62rem; font-weight: 750; }
+.import-status { min-height: 1.35em; margin: 12px 0 0; color: var(--steel); font-size: .76rem; font-weight: 650; line-height: 1.4; }.active-layout + .import-status { padding-top: 9px; border-top: 1px solid rgb(18 61 73 / .16); }
+.hold-panel { margin-top: 16px; padding: 16px 18px 18px; border: 1px solid var(--signal-red); border-left-width: 5px; background: rgb(255 242 237 / .96); }.hold-heading { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; }.hold-panel h2 { margin: 12px 0 0; font-size: clamp(1.3rem, 3vw, 2rem); }.error-list { display: grid; gap: 7px; margin: 14px 0 0; padding: 0; list-style: none; }.error-list li { display: grid; grid-template-columns: minmax(155px, .42fr) minmax(0, 1fr); gap: 12px; padding: 8px 0; border-top: 1px solid rgb(169 40 42 / .24); }.error-meta { overflow-wrap: anywhere; color: var(--signal-red-dark); font-size: .63rem; font-weight: 800; }.error-message { margin: 0; color: var(--deep-blue); font-size: .74rem; line-height: 1.4; }.additional-errors { margin: 10px 0 0; color: var(--signal-red-dark); font: 750 .66rem/1.4 "Cascadia Mono", Consolas, monospace; }
+@keyframes manifest-scan { to { transform: translateX(460%); } }
+@media (max-width: 640px) { .manifest-dock, .manifest-dock.is-compact { padding: 18px; }.manifest-empty-layout, .active-layout { grid-template-columns: 1fr; gap: 17px; }.manifest-actions { display: grid; width: 100%; justify-content: stretch; }.action-button { width: 100%; text-align: center; }.error-list li { grid-template-columns: 1fr; gap: 4px; } }
+@media (max-width: 350px) { .manifest-dock, .manifest-dock.is-compact { padding: 14px; }.state-seal { min-height: 30px; padding-inline: 7px; }.manifest-actions { grid-template-columns: 1fr; }.filename-line { display: grid; justify-items: start; }.hold-heading { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .manifest-dock.is-checking::before { left: 18px; width: 52px; background: repeating-linear-gradient(90deg, var(--deep-blue) 0 12px, transparent 12px 18px); animation: none; } }
