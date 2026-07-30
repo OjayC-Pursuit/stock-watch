@@ -2,7 +2,7 @@
 
 ## Current Project State
 
-StockWatch V2 with CSV loading is committed on `main`. The 80-product demo CSV refresh is complete in the uncommitted working tree on `feature/80-product-demo-csvs` and is ready for user review. No application behavior was changed.
+StockWatch V2 with CSV loading and 80-product demo scenarios is merged into `main` at `d9ddfb5`. The README product-story rewrite is uncommitted and awaiting user review. No application behavior changed in this documentation session.
 
 ## What Already Works
 
@@ -15,15 +15,13 @@ StockWatch V2 with CSV loading is committed on `main`. The 80-product demo CSV r
 
 ## Most Recent Completed Work
 
-- Created `feature/80-product-demo-csvs` from `main`.
-- Replaced the five presentation CSV fixtures with 80-row dairy and refrigerated inventory scenarios.
-- Updated Node and browser coverage to assert every valid demo imports 80 products, produces exact totals and headlines, and preserves the active dashboard after the invalid import.
-- Rewrote README around the current import-first StockWatch V2 MVP, verified the GitHub Pages link, and added a desktop screenshot of the imported 80-product balanced demo.
+- Merged the 80-product demo CSV fixtures, their test coverage, the current screenshot, and README updates into `main`.
+- Rewrote README to lead with Alicia’s FreshRoute inventory story, the MVP value, and the user journey; detailed CSV reference material now appears lower in the document.
 - Performed manual browser checks of all valid files, the invalid replacement flow, long-list sorting, responsive overflow, and browser-console output.
 
 ## Next Exact Task
 
-Review the completed 80-product demo CSV working tree, including the CSV fixtures, tests, README, and verification results. Do not commit until the user explicitly approves.
+Review the README product-story rewrite for clarity and accuracy. Do not commit until the user explicitly approves.
 
 ## Settled Decisions
 
@@ -39,7 +37,7 @@ Review the completed 80-product demo CSV working tree, including the CSV fixture
 
 ## Unresolved Decisions or Blockers
 
-- No implementation blocker is known. The next gate is user review and a commit decision for this feature branch.
+- No implementation blocker is known. The next gate is user review and a commit decision for the README rewrite.
 
 ## Verification Commands
 
