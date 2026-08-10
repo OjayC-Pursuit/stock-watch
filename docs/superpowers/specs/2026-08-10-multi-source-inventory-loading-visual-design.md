@@ -1,6 +1,6 @@
 # StockWatch Multi-Source Inventory Loading — Visual Design
 
-Status: Proposed for approval. This document defines visual treatment only and does not authorize implementation.
+Status: Approved. This document defines visual treatment only and does not authorize implementation.
 
 ## Sources of Truth
 
