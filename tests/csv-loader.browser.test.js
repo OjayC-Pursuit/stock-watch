@@ -64,7 +64,7 @@ test('imports every 80-product demo, preserves failed replacement, resets, and s
   page.on('pageerror', (error) => errors.push(error.message));
   try {
     await page.goto(url, { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Import a CSV inventory file to begin.' }).waitFor();
+    await page.getByRole('heading', { name: 'Choose an inventory source to begin.' }).waitFor();
     assert.equal(await page.locator('.product-card').count(), 0);
 
     for (const scenario of scenarios) {
@@ -76,13 +76,14 @@ test('imports every 80-product demo, preserves failed replacement, resets, and s
     }
 
     await page.locator('#inventory-file').setInputFiles(resolve(root, 'data/demo-csv/invalid-inventory.csv'));
-    await page.getByText('Could not import invalid-inventory.csv. Fix the listed issues and try again.').waitFor();
+    await page.locator('.source-status').getByText('Could not import invalid-inventory.csv. Fix the listed issues and try again.').waitFor();
+    assert.equal(await page.getByRole('button', { name: /Retry/ }).count(), 0);
     assert.equal(await page.getByText('all-safe-inventory.csv', { exact: true }).count(), 1);
     assert.equal(await page.locator('.product-card').count(), 80);
     assert.deepEqual(await dashboardCounts(page), scenarios.at(-1).counts);
 
     await page.getByRole('button', { name: 'Clear inventory' }).click();
-    await page.getByText('Inventory cleared. Import a CSV inventory file to begin.').waitFor();
+    await page.getByRole('heading', { name: 'Choose an inventory source to begin.' }).waitFor();
     assert.equal(await page.locator('.product-card').count(), 0);
 
     for (const width of [390, 320]) {
@@ -91,6 +92,92 @@ test('imports every 80-product demo, preserves failed replacement, resets, and s
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
       assert.equal(overflow, false, `${width}px should not overflow horizontally`);
     }
+    assert.deepEqual(errors, []);
+  } finally {
+    await browser.close();
+    await new Promise((resolveServer) => server.close(resolveServer));
+  }
+});
+
+test('shows bundled Retry and keeps the checking marker stationary for reduced motion', async () => {
+  const { server, url } = await startServer();
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  try {
+    await page.route('**/data/sample-inventory.json', (route) => route.abort());
+    await page.goto(url, { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: 'Load FreshRoute sample' }).click();
+    await page.locator('.source-status').getByText('Could not load the FreshRoute sample. Try again.').waitFor();
+    assert.equal(await page.getByRole('button', { name: 'Retry FreshRoute sample' }).count(), 1);
+
+    await page.unroute('**/data/sample-inventory.json');
+    await page.getByRole('button', { name: 'Retry FreshRoute sample' }).click();
+    await page.getByText('FreshRoute sample loaded — 8 inventory records.').waitFor();
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.route('**/data/demo-csv/dairy_dataset.csv', async (route) => {
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 50));
+      await route.continue();
+    });
+    await page.getByRole('button', { name: 'Load Kaggle historical training snapshot' }).click();
+    const dock = page.locator('.manifest-dock.is-checking');
+    await dock.waitFor();
+    assert.equal(await page.locator('#app').getAttribute('aria-busy'), 'false');
+    assert.equal(await page.locator('.source-picker').getAttribute('aria-busy'), 'true');
+    assert.equal(await dock.evaluate((element) => getComputedStyle(element, '::before').animationName), 'none');
+    await page.getByText('Kaggle historical training snapshot loaded — 80 inventory records.').waitFor();
+  } finally {
+    await browser.close();
+    await new Promise((resolveServer) => server.close(resolveServer));
+  }
+});
+
+test('loads FreshRoute and Kaggle sources through the manifest switchboard', async () => {
+  const { server, url } = await startServer();
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const errors = [];
+  page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
+  page.on('pageerror', (error) => errors.push(error.message));
+  try {
+    await page.goto(url, { waitUntil: 'networkidle' });
+    const freshRouteButton = page.getByRole('button', { name: 'Load FreshRoute sample' });
+    await freshRouteButton.focus();
+    assert.deepEqual(await freshRouteButton.evaluate((button) => ({
+      outlineWidth: getComputedStyle(button).outlineWidth,
+      outlineOffset: getComputedStyle(button).outlineOffset,
+    })), { outlineWidth: '3px', outlineOffset: '3px' });
+    await page.locator('#inventory-file').focus();
+    assert.deepEqual(await page.locator('label[for="inventory-file"]').evaluate((label) => ({
+      outlineWidth: getComputedStyle(label).outlineWidth,
+      outlineOffset: getComputedStyle(label).outlineOffset,
+    })), { outlineWidth: '3px', outlineOffset: '3px' });
+    await freshRouteButton.click();
+    await page.getByText('FreshRoute sample loaded — 8 inventory records.').waitFor();
+    assert.equal(await page.locator('.product-card').count(), 8);
+    assert.equal(await page.locator('[aria-live="polite"]').count(), 1);
+
+    await page.getByRole('button', { name: 'Load Kaggle historical training snapshot' }).click();
+    await page.getByText('Kaggle historical training snapshot loaded — 80 inventory records.').waitFor();
+    await page.getByText('Historical training snapshot — not current inventory').waitFor();
+    await page.getByRole('heading', { name: '40 products need attention in this snapshot.' }).waitFor();
+    assert.equal(await page.locator('.product-card').count(), 80);
+    assert.deepEqual(await dashboardCounts(page), {
+      Urgent: 12, 'Low Stock': 12, 'Expiring Soon': 16, Safe: 40,
+    });
+
+    for (const width of [1280, 390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      assert.equal(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+        true,
+        `${width}px should not overflow horizontally with 80 historical records`,
+      );
+    }
+
+    await page.getByRole('button', { name: 'Clear inventory' }).click();
+    await page.getByRole('heading', { name: 'Choose an inventory source to begin.' }).waitFor();
+    assert.equal(await page.locator('.product-card').count(), 0);
     assert.deepEqual(errors, []);
   } finally {
     await browser.close();

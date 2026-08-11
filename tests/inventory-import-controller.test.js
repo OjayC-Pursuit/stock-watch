@@ -70,8 +70,7 @@ test('preserves active inventory after an invalid replacement and resets empty',
   assert.equal(controller.getState().phase, 'empty');
   assert.equal(controller.getState().activeFileName, null);
   assert.equal(controller.getState().evaluatedProducts.length, 0);
-  assert.equal(controller.getState().statusMessage,
-    'Inventory cleared. Import a CSV inventory file to begin.');
+  assert.equal(controller.getState().statusMessage, '');
 });
 
 test('rejects wrong types and oversized files before parsing', () => {
@@ -188,6 +187,10 @@ test('keeps active records during a pending Kaggle replacement and after its fai
   const pending = controller.loadKaggleSnapshot();
   assert.equal(controller.getState().phase, 'checking');
   assert.equal(controller.getState().activeSource.type, 'freshroute-sample');
+  assert.deepEqual(controller.getState().attemptedSource, {
+    type: 'kaggle-historical-training',
+    title: 'Kaggle historical training snapshot',
+  });
   assert.equal(controller.getState().evaluatedProducts.length, 8);
 
   rejectKaggle(new Error('read failed'));
@@ -242,8 +245,7 @@ test('reset clears records, source identity, transient messages, retry state, an
   assert.equal(controller.getState().activeSource, null);
   assert.equal(controller.getState().activeSourceType, null);
   assert.equal(controller.getState().retrySourceType, null);
-  assert.equal(controller.getState().statusMessage,
-    'Inventory cleared. Import a CSV inventory file to begin.');
+  assert.equal(controller.getState().statusMessage, '');
   assert.equal(controller.getState().exclusionNote, null);
   assert.deepEqual(controller.getState().evaluatedProducts, []);
   assert.deepEqual(controller.getState().counts, {

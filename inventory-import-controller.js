@@ -37,6 +37,7 @@ function emptyState(statusMessage = '') {
     phase: 'empty',
     activeSource: null,
     activeSourceType: null,
+    attemptedSource: null,
     retrySourceType: null,
     activeFileName: null,
     attemptedFileName: null,
@@ -74,6 +75,13 @@ export function createInventoryImportController({
       ...state,
       phase: 'hold',
       attemptedFileName,
+      attemptedSource: retrySourceType
+        ? { type: retrySourceType, title: SOURCE_DESCRIPTORS.freshRoute.type === retrySourceType
+          ? SOURCE_DESCRIPTORS.freshRoute.title
+          : SOURCE_DESCRIPTORS.kaggle.title }
+        : attemptedFileName
+          ? { type: 'uploaded-csv', title: attemptedFileName }
+          : null,
       retrySourceType,
       statusMessage: message,
       errors,
@@ -89,6 +97,7 @@ export function createInventoryImportController({
       phase: 'active',
       activeSource: { type: descriptor.type, title: descriptor.title },
       activeSourceType: descriptor.type,
+      attemptedSource: null,
       retrySourceType: null,
       activeFileName: null,
       attemptedFileName: null,
@@ -109,6 +118,7 @@ export function createInventoryImportController({
       ...state,
       phase: 'checking',
       attemptedFileName: null,
+      attemptedSource: { type: descriptor.type, title: descriptor.title },
       retrySourceType: null,
       statusMessage: descriptor.loadingMessage,
       errors: [],
@@ -139,6 +149,7 @@ export function createInventoryImportController({
       ...state,
       phase: 'checking',
       attemptedFileName: file.name,
+      attemptedSource: { type: 'uploaded-csv', title: file.name },
       retrySourceType: null,
       statusMessage: `Checking ${file.name}\u2026`,
       errors: [],
@@ -173,6 +184,7 @@ export function createInventoryImportController({
         phase: 'active',
         activeSource: { type: 'uploaded-csv', title: file.name },
         activeSourceType: 'uploaded-csv',
+        attemptedSource: null,
         retrySourceType: null,
         activeFileName: file.name,
         attemptedFileName: null,
@@ -209,7 +221,7 @@ export function createInventoryImportController({
   };
 
   const reset = () => {
-    state = emptyState('Inventory cleared. Import a CSV inventory file to begin.');
+    state = emptyState();
     publish();
   };
 

@@ -31,8 +31,8 @@ const controller = createInventoryImportController({
   sortEvaluatedProducts,
   render: (state) => {
     renderDashboard(app, state);
-    app.setAttribute('aria-busy', state.phase === 'checking' ? 'true' : 'false');
-    if (state.phase === 'hold' && state.errors.length > 0) {
+    app.setAttribute('aria-busy', 'false');
+    if (state.phase === 'hold') {
       requestAnimationFrame(() => document.querySelector('#import-error-summary')?.focus());
     }
   },
@@ -45,5 +45,8 @@ app.addEventListener('change', (event) => {
 
 app.addEventListener('click', (event) => {
   const action = event.target.closest('[data-import-action]')?.dataset.importAction;
+  if (action === 'freshroute') controller.loadFreshRouteSample();
+  if (action === 'kaggle') controller.loadKaggleSnapshot();
+  if (action === 'retry') controller.retry();
   if (action === 'clear') controller.reset();
 });

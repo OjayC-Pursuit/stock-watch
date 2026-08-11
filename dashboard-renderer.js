@@ -89,6 +89,19 @@ function urgencyTiming(product) {
   return `${product.daysUntilExpiration} d expiry`;
 }
 
+function isHistoricalRecord(product) {
+  return product.sourceType === 'kaggle-historical-training';
+}
+
+function historicalContext(product) {
+  if (!isHistoricalRecord(product)) return '';
+  return `<p class="historical-context">Historical snapshot &middot; ${escapeHtml(product.sourceMetadata?.Location ?? 'Not specified')} &middot; Source date ${escapeHtml(product.sourceMetadata?.Date ?? 'Not specified')}</p>`;
+}
+
+function stockValue(value, product) {
+  return isHistoricalRecord(product) ? `${value} liters/kg` : value;
+}
+
 function productCard(product) {
   const details = STATUS_DETAILS[product.primaryStatus];
   const timing =
@@ -106,14 +119,15 @@ function productCard(product) {
       <h3>${escapeHtml(product.productName)}</h3>
       <p class="product-category">${escapeHtml(product.category)} · ${escapeHtml(product.brand)}</p>
 
+      ${historicalContext(product)}
       <dl class="inventory-facts">
         <div class="critical-fact">
           <dt>On hand</dt>
-          <dd>${product.quantityOnHand}</dd>
+          <dd>${stockValue(product.quantityOnHand, product)}</dd>
         </div>
         <div>
           <dt>Reorder threshold</dt>
-          <dd>${product.reorderThreshold}</dd>
+          <dd>${stockValue(product.reorderThreshold, product)}</dd>
         </div>
         <div>
           <dt>Sales rate</dt>
@@ -284,7 +298,18 @@ export function renderError(container) {
   `;
 }
 
-function renderEvaluatedDashboard(container, products, counts, headline = urgentHeadline(counts.Urgent)) {
+function historicalHeadline(counts) {
+  const attention = counts.Urgent + counts['Low Stock'] + counts['Expiring Soon'];
+  return `${attention} product${attention === 1 ? '' : 's'} need attention in this snapshot.`;
+}
+
+function renderEvaluatedDashboard(
+  container,
+  products,
+  counts,
+  headline = urgentHeadline(counts.Urgent),
+  sourceType = null,
+) {
   const urgentProducts = products.filter(
     (product) => product.primaryStatus === 'Urgent',
   );
@@ -294,11 +319,13 @@ function renderEvaluatedDashboard(container, products, counts, headline = urgent
       ${STATUS_GROUPS.map((status) => summaryRailItem(status, counts[status])).join('')}
     </section>
 
-    <section class="board-hero" aria-labelledby="priority-headline">
+    <section class="board-hero${sourceType === 'kaggle-historical-training' ? ' is-historical' : ''}" aria-labelledby="priority-headline">
       <div class="hero-message">
-        <p class="eyebrow">Morning inventory signal</p>
+        <p class="eyebrow">${sourceType === 'kaggle-historical-training' ? 'Historical inventory signal' : 'Morning inventory signal'}</p>
         <h1 id="priority-headline">${headline}</h1>
-        ${heroLead(urgentProducts[0])}
+        ${sourceType === 'kaggle-historical-training'
+          ? '<p class="hero-brief"><strong>Historical training data.</strong> Review the prioritized records in this curated snapshot.</p>'
+          : heroLead(urgentProducts[0])}
       </div>
       ${freshRouteHeroBrand()}
     </section>
@@ -352,18 +379,136 @@ function renderManifestDock(viewModel) {
   return `<section class="manifest-dock${hasActiveInventory ? ' is-compact' : ''}${checking ? ' is-checking' : ''}" ${dockLabel}><div class="manifest-header"><p class="manifest-kicker">RECEIVING MANIFEST · CSV</p><span class="state-seal ${active ? 'is-active' : ''}${holding ? ' is-hold' : ''}"><span aria-hidden="true">${active ? '✓' : holding ? '!' : checking ? '⋯' : '○'}</span>${seal}</span></div><div class="${hasActiveInventory ? 'active-layout' : 'manifest-empty-layout'}">${activeIdentity}<div>${actions}${hasActiveInventory ? '' : '<p class="manifest-helper">CSV only · Up to 1 MB · Maximum 250 products</p>'}</div></div>${renderImportStatus(viewModel)}${fileInput}${errors}</section>`;
 }
 
+function getActiveSource(viewModel) {
+  if (viewModel.activeSource) return viewModel.activeSource;
+  if (viewModel.activeFileName) {
+    return { type: 'uploaded-csv', title: viewModel.activeFileName };
+  }
+  return null;
+}
+
+function sourceCountLabel(source, count) {
+  if (source.type === 'uploaded-csv') {
+    return `${count} product${count === 1 ? '' : 's'}`;
+  }
+  return `${count} inventory record${count === 1 ? '' : 's'}`;
+}
+
+function sourcePicker(checking) {
+  const unavailable = checking ? ' disabled' : '';
+  const labelUnavailable = checking ? ' aria-disabled="true"' : '';
+  return `
+    <fieldset class="source-picker" aria-label="Choose inventory source"${checking ? ' aria-busy="true"' : ''}>
+      <legend>Choose inventory source</legend>
+      <div class="source-lane">
+        <p class="source-code">FR SAMPLE</p>
+        <h2>FreshRoute sample</h2>
+        <p>Bundled demonstration &middot; 8 inventory records</p>
+        <button type="button" class="action-button secondary" data-import-action="freshroute"${unavailable}>Load FreshRoute sample</button>
+      </div>
+      <div class="source-lane">
+        <p class="source-code">CSV</p>
+        <h2>Upload CSV</h2>
+        <p>Your inventory export &middot; CSV only &middot; Up to 250 products</p>
+        <label class="action-button primary" for="inventory-file"${labelUnavailable}>Upload CSV</label>
+      </div>
+      <div class="source-lane source-lane-historical">
+        <p class="source-code">HISTORICAL</p>
+        <h2>Kaggle training snapshot</h2>
+        <p>Curated training set &middot; 80 of 4,325 historical rows</p>
+        <button type="button" class="action-button secondary" data-import-action="kaggle"${unavailable}>Load Kaggle historical training snapshot</button>
+      </div>
+    </fieldset>
+  `;
+}
+
+function holdPanel(viewModel) {
+  if (viewModel.phase !== 'hold') return '';
+
+  const attempted = viewModel.attemptedSource?.title || viewModel.attemptedFileName || 'Inventory source';
+  const bundledFailure = Boolean(viewModel.retrySourceType);
+  const csvErrors = viewModel.errors?.length > 0;
+  const retry = bundledFailure
+    ? `<button type="button" class="action-button retry-action" data-import-action="retry" aria-label="Retry ${escapeHtml(attempted)}">Retry</button>`
+    : '';
+  const csvRecovery = !bundledFailure
+    ? `<div class="hold-recovery"><label class="action-button primary" for="inventory-file">Upload CSV</label><p class="manifest-helper">Choose a corrected file and upload it again.</p></div>`
+    : '';
+  const errorDetails = csvErrors
+    ? `<ul class="error-list">${viewModel.errors.map((error) => `<li><span class="error-meta">Row ${escapeHtml(error.row)} &middot; ${escapeHtml(error.column)}</span><p class="error-message">${escapeHtml(error.explanation)}</p></li>`).join('')}</ul>${viewModel.additionalErrorCount ? `<p class="additional-errors">+ ${viewModel.additionalErrorCount} additional issues</p>` : ''}`
+    : '';
+  return `
+    <section class="hold-panel" aria-labelledby="import-error-summary">
+      <div class="hold-heading">
+        <span class="state-seal is-hold" aria-hidden="true">! HOLD</span>
+        <div><span class="file-label">ATTEMPTED SOURCE</span><span class="filename">${escapeHtml(attempted)}</span></div>
+      </div>
+      <h2 id="import-error-summary" tabindex="-1">Source load needs attention.</h2>
+      <p class="error-message">${escapeHtml(viewModel.statusMessage || '')}</p>
+      ${errorDetails}
+      <div class="hold-actions">${retry}${csvRecovery}</div>
+    </section>
+  `;
+}
+
+function renderMultiSourceManifestDock(viewModel) {
+  const source = getActiveSource(viewModel);
+  const checking = viewModel.phase === 'checking';
+  const holding = viewModel.phase === 'hold';
+  const active = viewModel.phase === 'active';
+  const seal = holding ? 'HOLD' : checking ? 'CHECKING' : active ? 'ACTIVE' : 'EMPTY';
+  const sourceTitle = source?.title ?? '';
+  const sourceCount = viewModel.evaluatedProducts?.length ?? 0;
+  const identity = source
+    ? `<div class="active-source${source.type === 'kaggle-historical-training' ? ' is-historical' : ''}">
+        <span class="file-label">ACTIVE SOURCE</span>
+        <div class="filename-line"><span class="filename">${escapeHtml(sourceTitle)}</span><span class="product-count">${sourceCountLabel(source, sourceCount)}</span></div>
+        ${source.type === 'kaggle-historical-training' ? '<p class="historical-source-label">Historical training snapshot &mdash; not current inventory</p>' : ''}
+        ${checking && viewModel.attemptedSource ? `<p class="loading-source"><span>LOADING SOURCE</span>${escapeHtml(viewModel.attemptedSource.title)}</p>` : ''}
+      </div>`
+    : `<div><h1 class="manifest-title" id="manifest-title">Choose an inventory source to begin.</h1><p class="manifest-copy">Load a FreshRoute sample, upload your inventory CSV, or review the historical training snapshot.</p></div>`;
+  const dockLabel = source ? 'aria-label="Receiving manifest"' : 'aria-labelledby="manifest-title"';
+  const input = `<input id="inventory-file" class="visually-hidden" type="file" accept=".csv,text/csv"${checking ? ' disabled' : ''}>`;
+  const clear = source ? `<button type="button" class="action-button tertiary clear-action" data-import-action="clear"${checking ? ' disabled' : ''}>Clear inventory</button>` : '';
+
+  return `
+    <section class="manifest-dock manifest-switchboard${source ? ' is-compact' : ''}${checking ? ' is-checking' : ''}" ${dockLabel}>
+      <div class="manifest-header">
+        <p class="manifest-kicker">RECEIVING MANIFEST &middot; INVENTORY SOURCES</p>
+        <span class="state-seal ${active ? 'is-active' : ''}${holding ? ' is-hold' : ''}"><span aria-hidden="true">${active ? '✓' : holding ? '!' : checking ? '⋯' : '○'}</span>${seal}</span>
+      </div>
+      <div class="${source ? 'active-layout' : 'manifest-empty-layout'}">${identity}</div>
+      <div class="source-actions-rail">${sourcePicker(checking)}${clear}</div>
+      <div class="source-status" aria-live="polite" aria-atomic="true">${escapeHtml(viewModel.statusMessage || '')}${viewModel.exclusionNote ? `<p class="exclusion-note">${escapeHtml(viewModel.exclusionNote)}</p>` : ''}</div>
+      ${input}
+      ${holdPanel(viewModel)}
+    </section>
+  `;
+}
+
 export function renderDashboard(container, productsOrViewModel, counts) {
   if (Array.isArray(productsOrViewModel)) {
     renderEvaluatedDashboard(container, productsOrViewModel, counts);
     return;
   }
   const viewModel = productsOrViewModel;
-  const dock = renderManifestDock(viewModel);
+  const dock = renderMultiSourceManifestDock(viewModel);
   if (viewModel.evaluatedProducts.length === 0) {
     container.innerHTML = `${dock}<section class="priority-rail" aria-label="Inventory signal summary">${STATUS_GROUPS.map((status) => summaryRailItem(status, viewModel.counts[status])).join('')}</section>`;
     return;
   }
   const resultsContainer = { innerHTML: '' };
-  renderEvaluatedDashboard(resultsContainer, viewModel.evaluatedProducts, viewModel.counts, getImportedHeadline(viewModel.counts));
+  const source = getActiveSource(viewModel);
+  const sourceType = source?.type ?? null;
+  const headline = sourceType === 'kaggle-historical-training'
+    ? historicalHeadline(viewModel.counts)
+    : getImportedHeadline(viewModel.counts);
+  renderEvaluatedDashboard(
+    resultsContainer,
+    viewModel.evaluatedProducts,
+    viewModel.counts,
+    headline,
+    sourceType,
+  );
   container.innerHTML = `${dock}${resultsContainer.innerHTML}`;
 }
