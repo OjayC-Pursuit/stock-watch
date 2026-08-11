@@ -82,6 +82,10 @@ test('imports every 80-product demo, preserves failed replacement, resets, and s
     assert.equal(await page.locator('.product-card').count(), 80);
     assert.deepEqual(await dashboardCounts(page), scenarios.at(-1).counts);
 
+    await page.locator('#inventory-file').setInputFiles(resolve(root, 'data/demo-csv/balanced-inventory.csv'));
+    await page.getByText('Imported balanced-inventory.csv — 80 products loaded.').waitFor();
+    assert.deepEqual(await dashboardCounts(page), scenarios[0].counts);
+
     await page.getByRole('button', { name: 'Clear inventory' }).click();
     await page.getByRole('heading', { name: 'Choose an inventory source to begin.' }).waitFor();
     assert.equal(await page.locator('.product-card').count(), 0);
@@ -113,6 +117,15 @@ test('shows bundled Retry and keeps the checking marker stationary for reduced m
     await page.unroute('**/data/sample-inventory.json');
     await page.getByRole('button', { name: 'Retry FreshRoute sample' }).click();
     await page.getByText('FreshRoute sample loaded — 8 inventory records.').waitFor();
+    assert.equal(await page.locator('.product-card').count(), 8);
+
+    await page.route('**/data/demo-csv/dairy_dataset.csv', (route) => route.abort());
+    await page.getByRole('button', { name: 'Load Kaggle historical training snapshot' }).click();
+    await page.locator('.source-status').getByText('Could not load the Kaggle historical training snapshot. Try again.').waitFor();
+    assert.equal(await page.locator('.product-card').count(), 8);
+    await page.unroute('**/data/demo-csv/dairy_dataset.csv');
+    await page.getByRole('button', { name: 'Retry Kaggle historical training snapshot' }).click();
+    await page.getByText('Kaggle historical training snapshot loaded — 80 inventory records.').waitFor();
 
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.route('**/data/demo-csv/dairy_dataset.csv', async (route) => {

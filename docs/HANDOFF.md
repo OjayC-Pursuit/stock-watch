@@ -2,56 +2,47 @@
 
 ## Current Project State
 
-StockWatch V2 with CSV loading and 80-product demo scenarios is merged into `main` at `d9ddfb5`. The README product-story rewrite is uncommitted and awaiting user review. No application behavior changed in this documentation session.
+Multi-source inventory loading is implemented on `feature/multi-source-inventory-data` at `d223901`. The branch has a successful Vercel Preview deployment for that commit, but the Preview is protected by a Vercel login and is not ready as a public final-submission link. This documentation milestone is uncommitted and awaiting user review; `main` is unchanged.
 
 ## What Already Works
 
-- The browser-only CSV loader opens empty, validates a full CSV before replacing in-memory inventory, preserves the active dashboard after a failed replacement, and resets to empty.
-- The evaluator retains its fixed July 22, 2026 demo date, prioritization rules, sorting, reasons, and recommended actions.
-- All four valid demo files now have 80 products with the approved nine-column header schema and unique supplied IDs.
-- Browser verification confirmed all 80 cards render for every valid demo, the status totals and grammar-aware headlines are correct, the status order is correct, and the 80-card list does not horizontally overflow at 1280px, 390px, or 320px.
-- The invalid demo file has 80 presentation-like rows and five deliberate validation problems. It displays the capped row-and-column error list and leaves the previously active dashboard unchanged.
-- The full automated suite passes: 33 tests, including the expanded browser importer test.
+- StockWatch starts in true no-data with three choices: FreshRoute sample, CSV upload, and Kaggle historical training snapshot.
+- Every source follows one transaction: parse and validate, normalize, evaluate with the unchanged engine, then replace the dashboard only on complete success.
+- FreshRoute activates exactly 8 validated records; uploaded CSV supports up to 250 rows; the bundled Kaggle source activates a deterministic 80-record historical snapshot.
+- Kaggle records are labeled historical, preserve source metadata, use a fixed July 22, 2026 demo date for derived expiration timing, and evaluate to 12 Urgent, 12 Low Stock, 16 Expiring Soon, and 40 Safe.
+- Failed source replacements preserve the active dashboard. FreshRoute and Kaggle failures provide Retry; invalid uploads require choosing a corrected file. Reset clears records, source identity, messages, retry state, and notes.
+- The Receiving Manifest Switchboard remains responsive without horizontal overflow at desktop, 390px, and 320px in browser coverage. It has one compact live region, visible two-layer keyboard focus, and a reduced-motion checking state.
 
 ## Most Recent Completed Work
 
-- Merged the 80-product demo CSV fixtures, their test coverage, the current screenshot, and README updates into `main`.
-- Rewrote README to lead with Alicia’s FreshRoute inventory story, the MVP value, and the user journey; detailed CSV reference material now appears lower in the document.
-- Performed manual browser checks of all valid files, the invalid replacement flow, long-list sorting, responsive overflow, and browser-console output.
+- Implemented the switchboard and source-aware rendering in commits `5d03e2f`, `7096f38`, `26a2b00`, and `d223901`.
+- Reran the full suite on August 11, 2026: 58 tests passed, 0 failed, including three browser tests.
+- Verified the Vercel Preview for `d223901` completed successfully, but its browser response is the Vercel login page rather than StockWatch; public deployment access remains unresolved.
+- Updated README to document verified multi-source behavior, source boundaries, historical-data attribution, and the current Preview versus production distinction.
 
 ## Next Exact Task
 
-Review the README product-story rewrite for clarity and accuracy. Do not commit until the user explicitly approves.
+Review and approve the completed multi-source feature documentation for commit. Do not merge this feature branch into `main`, commit, or push until the user explicitly approves.
 
 ## Settled Decisions
 
-- StockWatch remains a small, plain HTML, CSS, and JavaScript class MVP with no backend, persistence, framework, package, or CSV library.
-- Imported inventory remains temporary and in memory for the current browser session.
-- Valid demo fixtures use exactly 80 products plus one header row with this schema: `id`, `productName`, `category`, `brand`, `quantityOnHand`, `reorderThreshold`, `salesRatePerDay`, `expirationDate`, and `storageCondition`.
-- `balanced-inventory.csv`: 4 Urgent, 12 Low Stock, 16 Expiring Soon, 48 Safe; headline: “4 cases are at the red line.”
-- `high-urgency-inventory.csv`: 45 Urgent, 10 Low Stock, 10 Expiring Soon, 15 Safe; headline: “45 cases are at the red line.”
-- `expiration-heavy-inventory.csv`: 0 Urgent, 0 Low Stock, 60 Expiring Soon, 20 Safe; headline: “60 products need attention today.”
-- `all-safe-inventory.csv`: 0 Urgent, 0 Low Stock, 0 Expiring Soon, 80 Safe; headline: “Inventory is clear for today.”
-- `invalid-inventory.csv` deliberately has five row-and-column errors: negative quantity, invalid date format, blank brand, nonnumeric sales rate, and duplicate supplied ID.
-- Temporary `.superpowers/` files remain ignored and outside the intended commit.
+- Keep the project as a plain HTML, CSS, and JavaScript class MVP with no backend, database, persistence, framework, package, or direct Kaggle API.
+- Kaggle is a bundled historical training snapshot, never live or current inventory. It uses the verified Dairy Goods Sales Dataset source (2019–2022, CC0/Public Domain) and activates 80 of 4,325 source rows.
+- CSV uploads remain temporary and all-or-nothing; the 250-row limit applies only to uploaded files, not bundled sources.
+- `.superpowers/` remains ignored and outside intended commits.
 
 ## Unresolved Decisions or Blockers
 
-- No implementation blocker is known. The next gate is user review and a commit decision for the README rewrite.
+The multi-source browser implementation has no known code blocker. Public deployment access is unresolved: the successful Vercel Preview is login-protected, and GitHub Pages still serves `main` without this branch. The remaining gates are user review of the uncommitted README and handoff updates, a user-authorized commit, and a public deployment decision.
 
 ## Verification Commands
 
 Run from the repository root:
 
 ```powershell
-node --test tests/inventory-evaluator.test.js tests/dashboard-renderer.test.js tests/csv-parser.test.js tests/inventory-validator.test.js tests/inventory-import-controller.test.js tests/csv-demo-scenarios.test.js tests/csv-loader.browser.test.js
+node --test tests/inventory-evaluator.test.js tests/dashboard-renderer.test.js tests/csv-parser.test.js tests/inventory-validator.test.js tests/inventory-normalizer.test.js tests/inventory-source-loaders.test.js tests/inventory-import-controller.test.js tests/csv-demo-scenarios.test.js tests/csv-loader.browser.test.js
 git diff --check
 git status --short --branch
 ```
 
-Manual browser checks:
-
-- import each valid demo CSV and confirm 80 cards, exact totals, and its expected headline;
-- load `invalid-inventory.csv` after a valid import and confirm the active file and 80 cards remain;
-- verify the long inventory list at 1280px, 390px, and 320px with no horizontal overflow; and
-- check the browser console for errors or warnings.
+Browser coverage verifies FreshRoute, uploads, Kaggle, source switching, failed-replacement preservation, bundled Retry, CSV re-upload recovery, Reset, console errors, reduced motion, keyboard focus, and overflow at desktop, 390px, and 320px.
