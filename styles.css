@@ -1006,17 +1006,6 @@ h3 {
 }
 
 .source-lane + .source-lane { border-left: 1px solid var(--chiller-blue); }
-.source-lane-historical { position: relative; }
-.source-lane-historical::before {
-  position: absolute;
-  top: 16px;
-  bottom: 16px;
-  left: 0;
-  width: 4px;
-  content: '';
-  background: repeating-linear-gradient(180deg, var(--chiller-blue) 0 4px, var(--ice-paper) 4px 8px);
-}
-
 .source-code,
 .historical-source-label,
 .loading-source,
@@ -1064,21 +1053,6 @@ h3 {
 }
 
 .active-source { min-width: 0; }
-.active-source.is-historical {
-  position: relative;
-  padding-left: 12px;
-}
-.active-source.is-historical::before,
-.board-hero.is-historical::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 4px;
-  content: '';
-  background: repeating-linear-gradient(180deg, var(--chiller-blue) 0 4px, var(--ice-paper) 4px 8px);
-}
-
 .historical-source-label {
   margin: 8px 0 0;
   color: var(--deep-blue);
@@ -1131,8 +1105,6 @@ h3 {
   overflow-wrap: anywhere;
 }
 
-.board-hero.is-historical { position: relative; }
-
 @media (max-width: 640px) {
   .source-actions-rail {
     display: grid;
@@ -1152,11 +1124,6 @@ h3 {
   .source-lane + .source-lane {
     border-top: 1px solid var(--chiller-blue);
     border-left: 0;
-  }
-
-  .source-lane-historical::before {
-    top: 16px;
-    bottom: 16px;
   }
 
   .source-lane > p:not(.source-code) { min-height: 0; }
