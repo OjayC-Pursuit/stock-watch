@@ -18,6 +18,8 @@ export function getFileSelectionError(file) {
 function emptyState(statusMessage = '') {
   return {
     phase: 'empty',
+    activeSourceType: null,
+    retrySourceType: null,
     activeFileName: null,
     attemptedFileName: null,
     statusMessage,
@@ -32,6 +34,7 @@ export function createInventoryImportController({
   readText,
   parseCsv,
   validateInventoryRows,
+  loadFreshRouteRecords,
   evaluateProduct,
   getStatusCounts,
   sortEvaluatedProducts,
@@ -39,11 +42,12 @@ export function createInventoryImportController({
 }) {
   let state = emptyState();
   const publish = () => render(state);
-  const setFailure = (fileName, message, errors = [], additionalErrorCount = 0) => {
+  const setFailure = (fileName, message, errors = [], additionalErrorCount = 0, retrySourceType = null) => {
     state = {
       ...state,
       phase: 'hold',
       attemptedFileName: fileName,
+      retrySourceType,
       statusMessage: message,
       errors,
       additionalErrorCount,
@@ -81,6 +85,8 @@ export function createInventoryImportController({
       const count = evaluatedProducts.length;
       state = {
         phase: 'active',
+        activeSourceType: 'uploaded-csv',
+        retrySourceType: null,
         activeFileName: file.name,
         attemptedFileName: null,
         statusMessage: `Imported ${file.name} — ${count} product${count === 1 ? '' : 's'} loaded.`,
@@ -95,11 +101,68 @@ export function createInventoryImportController({
     }
   };
 
+  const loadFreshRouteSample = async () => {
+    state = {
+      ...state,
+      phase: 'checking',
+      attemptedFileName: null,
+      retrySourceType: null,
+      statusMessage: 'Loading FreshRoute sample\u2026',
+      errors: [],
+      additionalErrorCount: 0,
+    };
+    publish();
+
+    try {
+      const loaded = await loadFreshRouteRecords();
+      if (!loaded?.ok) {
+        setFailure(
+          '',
+          'Could not load the FreshRoute sample. Try again.',
+          [],
+          0,
+          'freshroute-sample',
+        );
+        return;
+      }
+
+      const evaluatedProducts = sortEvaluatedProducts(loaded.records.map(evaluateProduct));
+      const counts = getStatusCounts(evaluatedProducts);
+      state = {
+        phase: 'active',
+        activeSourceType: 'freshroute-sample',
+        retrySourceType: null,
+        activeFileName: null,
+        attemptedFileName: null,
+        statusMessage: 'FreshRoute sample loaded \u2014 8 inventory records.',
+        errors: [],
+        additionalErrorCount: 0,
+        evaluatedProducts,
+        counts,
+      };
+      publish();
+    } catch {
+      setFailure(
+        '',
+        'Could not load the FreshRoute sample. Try again.',
+        [],
+        0,
+        'freshroute-sample',
+      );
+    }
+  };
+
+  const retry = async () => {
+    if (state.retrySourceType === 'freshroute-sample') {
+      await loadFreshRouteSample();
+    }
+  };
+
   const reset = () => {
     state = emptyState('Inventory cleared. Import a CSV inventory file to begin.');
     publish();
   };
 
   publish();
-  return { getState: () => state, importFile, reset };
+  return { getState: () => state, importFile, loadFreshRouteSample, retry, reset };
 }
