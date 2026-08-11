@@ -5,6 +5,23 @@ const EMPTY_COUNTS = {
   Safe: 0,
 };
 
+const SOURCE_DESCRIPTORS = {
+  freshRoute: {
+    type: 'freshroute-sample',
+    title: 'FreshRoute sample',
+    loadingMessage: 'Loading FreshRoute sample\u2026',
+    successMessage: 'FreshRoute sample loaded \u2014 8 inventory records.',
+    failureMessage: 'Could not load the FreshRoute sample. Try again.',
+  },
+  kaggle: {
+    type: 'kaggle-historical-training',
+    title: 'Kaggle historical training snapshot',
+    loadingMessage: 'Building Kaggle historical training snapshot\u2026',
+    successMessage: 'Kaggle historical training snapshot loaded \u2014 80 inventory records.',
+    failureMessage: 'Could not load the Kaggle historical training snapshot. Try again.',
+  },
+};
+
 export function getFileSelectionError(file) {
   if (!file || !file.name?.toLowerCase().endsWith('.csv')) {
     return 'Choose a .csv inventory file.';
@@ -18,6 +35,7 @@ export function getFileSelectionError(file) {
 function emptyState(statusMessage = '') {
   return {
     phase: 'empty',
+    activeSource: null,
     activeSourceType: null,
     retrySourceType: null,
     activeFileName: null,
@@ -25,6 +43,7 @@ function emptyState(statusMessage = '') {
     statusMessage,
     errors: [],
     additionalErrorCount: 0,
+    exclusionNote: null,
     evaluatedProducts: [],
     counts: { ...EMPTY_COUNTS },
   };
@@ -35,6 +54,7 @@ export function createInventoryImportController({
   parseCsv,
   validateInventoryRows,
   loadFreshRouteRecords,
+  loadKaggleRecords,
   evaluateProduct,
   getStatusCounts,
   sortEvaluatedProducts,
@@ -42,17 +62,70 @@ export function createInventoryImportController({
 }) {
   let state = emptyState();
   const publish = () => render(state);
-  const setFailure = (fileName, message, errors = [], additionalErrorCount = 0, retrySourceType = null) => {
+
+  const setFailure = (
+    attemptedFileName,
+    message,
+    errors = [],
+    additionalErrorCount = 0,
+    retrySourceType = null,
+  ) => {
     state = {
       ...state,
       phase: 'hold',
-      attemptedFileName: fileName,
+      attemptedFileName,
       retrySourceType,
       statusMessage: message,
       errors,
       additionalErrorCount,
     };
     publish();
+  };
+
+  const evaluateAndActivate = (descriptor, loaded) => {
+    const evaluatedProducts = sortEvaluatedProducts(loaded.records.map(evaluateProduct));
+    const excludedRowCount = loaded.excludedRowCount ?? 0;
+    state = {
+      phase: 'active',
+      activeSource: { type: descriptor.type, title: descriptor.title },
+      activeSourceType: descriptor.type,
+      retrySourceType: null,
+      activeFileName: null,
+      attemptedFileName: null,
+      statusMessage: descriptor.successMessage,
+      errors: [],
+      additionalErrorCount: 0,
+      exclusionNote: excludedRowCount > 0
+        ? `80 historical records loaded; ${excludedRowCount} ineligible source rows excluded.`
+        : null,
+      evaluatedProducts,
+      counts: getStatusCounts(evaluatedProducts),
+    };
+    publish();
+  };
+
+  const runBundledSource = async (descriptor, loadRecords) => {
+    state = {
+      ...state,
+      phase: 'checking',
+      attemptedFileName: null,
+      retrySourceType: null,
+      statusMessage: descriptor.loadingMessage,
+      errors: [],
+      additionalErrorCount: 0,
+    };
+    publish();
+
+    try {
+      const loaded = await loadRecords();
+      if (!loaded?.ok || !Array.isArray(loaded.records)) {
+        setFailure('', descriptor.failureMessage, [], 0, descriptor.type);
+        return;
+      }
+      evaluateAndActivate(descriptor, loaded);
+    } catch {
+      setFailure('', descriptor.failureMessage, [], 0, descriptor.type);
+    }
   };
 
   const importFile = async (file) => {
@@ -62,7 +135,15 @@ export function createInventoryImportController({
       return;
     }
 
-    state = { ...state, phase: 'checking', attemptedFileName: file.name, statusMessage: `Checking ${file.name}…`, errors: [], additionalErrorCount: 0 };
+    state = {
+      ...state,
+      phase: 'checking',
+      attemptedFileName: file.name,
+      retrySourceType: null,
+      statusMessage: `Checking ${file.name}\u2026`,
+      errors: [],
+      additionalErrorCount: 0,
+    };
     publish();
 
     try {
@@ -77,23 +158,30 @@ export function createInventoryImportController({
       }
       const validated = validateInventoryRows(parsed.rows);
       if (!validated.ok) {
-        setFailure(file.name, validated.message ?? `Could not import ${file.name}. Fix the listed issues and try again.`, validated.errors, validated.additionalErrorCount ?? 0);
+        setFailure(
+          file.name,
+          validated.message ?? `Could not import ${file.name}. Fix the listed issues and try again.`,
+          validated.errors,
+          validated.additionalErrorCount ?? 0,
+        );
         return;
       }
+
       const evaluatedProducts = sortEvaluatedProducts(validated.products.map(evaluateProduct));
-      const counts = getStatusCounts(evaluatedProducts);
       const count = evaluatedProducts.length;
       state = {
         phase: 'active',
+        activeSource: { type: 'uploaded-csv', title: file.name },
         activeSourceType: 'uploaded-csv',
         retrySourceType: null,
         activeFileName: file.name,
         attemptedFileName: null,
-        statusMessage: `Imported ${file.name} — ${count} product${count === 1 ? '' : 's'} loaded.`,
+        statusMessage: `Imported ${file.name} \u2014 ${count} product${count === 1 ? '' : 's'} loaded.`,
         errors: [],
         additionalErrorCount: 0,
+        exclusionNote: null,
         evaluatedProducts,
-        counts,
+        counts: getStatusCounts(evaluatedProducts),
       };
       publish();
     } catch {
@@ -101,60 +189,22 @@ export function createInventoryImportController({
     }
   };
 
-  const loadFreshRouteSample = async () => {
-    state = {
-      ...state,
-      phase: 'checking',
-      attemptedFileName: null,
-      retrySourceType: null,
-      statusMessage: 'Loading FreshRoute sample\u2026',
-      errors: [],
-      additionalErrorCount: 0,
-    };
-    publish();
+  const loadFreshRouteSample = async () => runBundledSource(
+    SOURCE_DESCRIPTORS.freshRoute,
+    loadFreshRouteRecords,
+  );
 
-    try {
-      const loaded = await loadFreshRouteRecords();
-      if (!loaded?.ok) {
-        setFailure(
-          '',
-          'Could not load the FreshRoute sample. Try again.',
-          [],
-          0,
-          'freshroute-sample',
-        );
-        return;
-      }
-
-      const evaluatedProducts = sortEvaluatedProducts(loaded.records.map(evaluateProduct));
-      const counts = getStatusCounts(evaluatedProducts);
-      state = {
-        phase: 'active',
-        activeSourceType: 'freshroute-sample',
-        retrySourceType: null,
-        activeFileName: null,
-        attemptedFileName: null,
-        statusMessage: 'FreshRoute sample loaded \u2014 8 inventory records.',
-        errors: [],
-        additionalErrorCount: 0,
-        evaluatedProducts,
-        counts,
-      };
-      publish();
-    } catch {
-      setFailure(
-        '',
-        'Could not load the FreshRoute sample. Try again.',
-        [],
-        0,
-        'freshroute-sample',
-      );
-    }
-  };
+  const loadKaggleSnapshot = async () => runBundledSource(
+    SOURCE_DESCRIPTORS.kaggle,
+    loadKaggleRecords,
+  );
 
   const retry = async () => {
-    if (state.retrySourceType === 'freshroute-sample') {
+    if (state.retrySourceType === SOURCE_DESCRIPTORS.freshRoute.type) {
       await loadFreshRouteSample();
+    }
+    if (state.retrySourceType === SOURCE_DESCRIPTORS.kaggle.type) {
+      await loadKaggleSnapshot();
     }
   };
 
@@ -164,5 +214,12 @@ export function createInventoryImportController({
   };
 
   publish();
-  return { getState: () => state, importFile, loadFreshRouteSample, retry, reset };
+  return {
+    getState: () => state,
+    importFile,
+    loadFreshRouteSample,
+    loadKaggleSnapshot,
+    retry,
+    reset,
+  };
 }

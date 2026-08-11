@@ -3,13 +3,29 @@ import { renderDashboard } from './dashboard-renderer.js';
 import { parseCsv } from './csv-parser.js';
 import { validateInventoryRows } from './inventory-validator.js';
 import { createInventoryImportController } from './inventory-import-controller.js';
+import {
+  parseFreshRouteSample,
+  parseKaggleTrainingSnapshot,
+} from './inventory-source-loaders.js';
 
 const app = document.querySelector('#app');
+
+async function readBundledText(path) {
+  const response = await fetch(path);
+  if (!response.ok) throw new Error(`Could not read ${path}.`);
+  return response.text();
+}
 
 const controller = createInventoryImportController({
   readText: (file) => file.text(),
   parseCsv,
   validateInventoryRows,
+  loadFreshRouteRecords: async () => parseFreshRouteSample(
+    await readBundledText('./data/sample-inventory.json'),
+  ),
+  loadKaggleRecords: async () => parseKaggleTrainingSnapshot(
+    await readBundledText('./data/demo-csv/dairy_dataset.csv'),
+  ),
   evaluateProduct,
   getStatusCounts,
   sortEvaluatedProducts,

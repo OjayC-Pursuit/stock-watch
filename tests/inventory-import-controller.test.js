@@ -13,12 +13,29 @@ function file(name, text, size = text.length) {
   return { name, size, text: async () => text };
 }
 
-function controllerFor({ loadFreshRouteRecords } = {}) {
+function sourceRecords(count, prefix) {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `${prefix}-${String(index + 1).padStart(3, '0')}`,
+    productName: `${prefix} Product ${index + 1}`,
+    category: 'Dairy',
+    brand: `${prefix} Farms`,
+    quantityOnHand: 20,
+    reorderThreshold: 10,
+    salesRatePerDay: 2,
+    expirationDate: '2026-08-15',
+    storageCondition: 'Refrigerated',
+    sourceType: prefix === 'KAGGLE' ? 'kaggle-historical-training' : 'freshroute-sample',
+    sourceMetadata: { Location: 'Test location' },
+  }));
+}
+
+function controllerFor({ loadFreshRouteRecords, loadKaggleRecords } = {}) {
   const renders = [];
   const controller = createInventoryImportController({
     readText: (selected) => selected.text(), parseCsv, validateInventoryRows,
     evaluateProduct, getStatusCounts, sortEvaluatedProducts,
     loadFreshRouteRecords,
+    loadKaggleRecords,
     render: (state) => renders.push(state),
   });
   return { controller, renders };
@@ -137,4 +154,99 @@ test('keeps the true no-data state after a first FreshRoute failure', async () =
   assert.equal(controller.getState().evaluatedProducts.length, 0);
   assert.equal(controller.getState().statusMessage,
     'Could not load the FreshRoute sample. Try again.');
+});
+
+test('switches CSV, FreshRoute, and Kaggle only after each source succeeds', async () => {
+  const { controller } = controllerFor({
+    loadFreshRouteRecords: async () => ({ ok: true, records: sourceRecords(8, 'FRESHROUTE') }),
+    loadKaggleRecords: async () => ({ ok: true, records: sourceRecords(80, 'KAGGLE') }),
+  });
+
+  await controller.importFile(file('balanced-inventory.csv', validCsv));
+  await controller.loadFreshRouteSample();
+  assert.equal(controller.getState().activeSource.type, 'freshroute-sample');
+  assert.equal(controller.getState().evaluatedProducts.length, 8);
+
+  await controller.loadKaggleSnapshot();
+  assert.equal(controller.getState().activeSource.type, 'kaggle-historical-training');
+  assert.equal(controller.getState().evaluatedProducts.length, 80);
+  assert.equal(controller.getState().statusMessage,
+    'Kaggle historical training snapshot loaded \u2014 80 inventory records.');
+});
+
+test('keeps active records during a pending Kaggle replacement and after its failure', async () => {
+  let rejectKaggle;
+  const deferredKaggle = new Promise((resolve, reject) => {
+    rejectKaggle = reject;
+  });
+  const { controller } = controllerFor({
+    loadFreshRouteRecords: async () => ({ ok: true, records: sourceRecords(8, 'FRESHROUTE') }),
+    loadKaggleRecords: async () => deferredKaggle,
+  });
+
+  await controller.loadFreshRouteSample();
+  const pending = controller.loadKaggleSnapshot();
+  assert.equal(controller.getState().phase, 'checking');
+  assert.equal(controller.getState().activeSource.type, 'freshroute-sample');
+  assert.equal(controller.getState().evaluatedProducts.length, 8);
+
+  rejectKaggle(new Error('read failed'));
+  await pending;
+
+  assert.equal(controller.getState().phase, 'hold');
+  assert.equal(controller.getState().activeSource.type, 'freshroute-sample');
+  assert.equal(controller.getState().evaluatedProducts.length, 8);
+  assert.equal(controller.getState().statusMessage,
+    'Could not load the Kaggle historical training snapshot. Try again.');
+  assert.equal(controller.getState().retrySourceType, 'kaggle-historical-training');
+});
+
+test('retries a failed Kaggle source but does not retry an invalid uploaded CSV', async () => {
+  let kaggleAttempts = 0;
+  const { controller } = controllerFor({
+    loadFreshRouteRecords: async () => ({ ok: true, records: sourceRecords(8, 'FRESHROUTE') }),
+    loadKaggleRecords: async () => {
+      kaggleAttempts += 1;
+      return kaggleAttempts === 1
+        ? { ok: false, diagnostics: ['source issue'] }
+        : { ok: true, records: sourceRecords(80, 'KAGGLE') };
+    },
+  });
+
+  await controller.loadFreshRouteSample();
+  await controller.loadKaggleSnapshot();
+  await controller.retry();
+  assert.equal(kaggleAttempts, 2);
+  assert.equal(controller.getState().activeSource.type, 'kaggle-historical-training');
+
+  await controller.importFile(file('invalid-inventory.csv', invalidCsv));
+  assert.equal(controller.getState().retrySourceType, null);
+  await controller.retry();
+  assert.equal(kaggleAttempts, 2);
+  assert.equal(controller.getState().activeSource.type, 'kaggle-historical-training');
+});
+
+test('reset clears records, source identity, transient messages, retry state, and exclusion notes', async () => {
+  const { controller } = controllerFor({
+    loadKaggleRecords: async () => ({
+      ok: true,
+      records: sourceRecords(80, 'KAGGLE'),
+      excludedRowCount: 2,
+    }),
+  });
+
+  await controller.loadKaggleSnapshot();
+  controller.reset();
+
+  assert.equal(controller.getState().phase, 'empty');
+  assert.equal(controller.getState().activeSource, null);
+  assert.equal(controller.getState().activeSourceType, null);
+  assert.equal(controller.getState().retrySourceType, null);
+  assert.equal(controller.getState().statusMessage,
+    'Inventory cleared. Import a CSV inventory file to begin.');
+  assert.equal(controller.getState().exclusionNote, null);
+  assert.deepEqual(controller.getState().evaluatedProducts, []);
+  assert.deepEqual(controller.getState().counts, {
+    Urgent: 0, 'Low Stock': 0, 'Expiring Soon': 0, Safe: 0,
+  });
 });
